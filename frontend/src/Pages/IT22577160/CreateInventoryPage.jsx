@@ -17,6 +17,7 @@ import { useNavigate } from "react-router-dom";
 import { app } from "../../firebase";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
+import { toast } from "react-toastify";
 
 export default function CreateInventoryPage() {
   const [file, setFile] = useState(null);
@@ -122,8 +123,8 @@ export default function CreateInventoryPage() {
       }
       if (res.ok) {
         setError(null);
-        // navigate(`/dashboard?tab=properties`);
-        console.log("added");
+        navigate(`/dashboard?tab=inventory`);
+        toast.success("Added One Item to Inventory");
       }
     } catch (error) {
       setError("Failed to create shared resource listing");

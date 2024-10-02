@@ -36,3 +36,48 @@ export const createInventory = async (req, res, next) => {
     next(error);
   }
 };
+
+// Get all the inventory items
+export const getInventoryItems = async (req, res, next) => {
+  try {
+    // Parse query parameters for pagination and sorting
+    const startIndex = parseInt(req.query.startIndex) || 0;
+    const limit = parseInt(req.query.limit) || 9;
+    const sortDirection = req.query.order === "asc" ? 1 : -1;
+    // Build the query object based on available query parameters
+    const resources = await Inventory.find({
+      ...(req.query.userId && { userId: req.query.userId }),
+      ...(req.query.category && { category: req.query.category }),
+      ...(req.query.slug && { slug: req.query.slug }),
+      ...(req.query.quantity && { quantity: req.query.quantity }),
+      ...(req.query.type && { type: req.query.type }),
+      ...(req.query.resourceId && { _id: req.query.resourceId }),
+      ...(req.query.searchTerm && {
+        $or: [
+          { itemName: { $regex: req.query.searchTerm, $options: "i" } },
+          { description: { $regex: req.query.searchTerm, $options: "i" } },
+        ],
+      }),
+    })
+      .sort({ updatedAt: sortDirection })
+      .skip(startIndex)
+      .limit(limit);
+    // Get the total number of resources in the database
+    const totalResources = await Inventory.countDocuments();
+    // Get the current date and calculate the date one month ago
+    const now = new Date();
+    const oneMonthAgo = new Date(
+      now.getFullYear(),
+      now.getMonth() - 1,
+      now.getDate()
+    );
+    // Count the number of resources created in the last month
+    const lastMonthResources = await Inventory.countDocuments({
+      createdAt: { $gte: oneMonthAgo },
+    });
+    // Send the response with the resources, total count, and last month count
+    res.status(200).json({ resources, totalResources, lastMonthResources });
+  } catch (error) {
+    next(error);
+  }
+};
