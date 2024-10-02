@@ -128,7 +128,7 @@ export default function DashInventory() {
                     <Table.Cell>
                       <Link
                         className="text-teal-500 hover:underline"
-                        to={`/update-sharedResourceListing/${resources._id}`}
+                        to={`/update-inventoryListing/${resources._id}`}
                       >
                         <span>Edit</span>
                       </Link>

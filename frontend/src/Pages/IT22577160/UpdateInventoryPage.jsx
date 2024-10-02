@@ -12,14 +12,15 @@ import {
   TextInput,
   Textarea,
 } from "flowbite-react";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { app } from "../../firebase";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
 
-export default function CreateInventoryPage() {
+export default function UpdateInventoryPage() {
   const [file, setFile] = useState(null);
   const [imageUploadProgress, setImageUploadProgress] = useState(null);
   const [imageUploadError, setImageUploadError] = useState(null);
@@ -38,6 +39,32 @@ export default function CreateInventoryPage() {
   });
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const { resourceId } = useParams();
+  const { currentUser } = useSelector((state) => state.user);
+
+  // Get relevant inventory item data
+  useEffect(() => {
+    try {
+      const fetchResources = async () => {
+        const res = await fetch(
+          `/api/inventory/getInventoryItems?resourceId=${resourceId}`
+        );
+        const data = await res.json();
+        if (!res.ok) {
+          console.log(data.message);
+          setError(data.message);
+          return;
+        }
+        if (res.ok) {
+          setError(null);
+          setFormData(data.resources[0]);
+        }
+      };
+      fetchResources();
+    } catch (error) {
+      console.log(error);
+    }
+  }, [resourceId]);
 
   // Function to handle image upload
   const handleUploadImage = async () => {
@@ -104,18 +131,17 @@ export default function CreateInventoryPage() {
       // Ensure discount price is less than the regular price
       if (+formData.regularPrice < +formData.discountPrice)
         return setError("Discount price must be lower than regular price");
-      if (!file) {
-        setImageUploadError("Please select an image");
-        return;
-      }
-      // Make API request to create inventory
-      const res = await fetch("/api/inventory/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData), // Send form data in the body
-      });
+      // Make API request to update inventory
+      const res = await fetch(
+        `/api/inventory/updateInventoryItems/${formData._id}/${currentUser._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData), // Send form data in the body
+        }
+      );
       const data = await res.json();
       if (!res.ok) {
         setError(data.message);
@@ -124,7 +150,7 @@ export default function CreateInventoryPage() {
       if (res.ok) {
         setError(null);
         navigate(`/dashboard?tab=inventory`);
-        toast.success("Added One Item to Inventory");
+        toast.success("Update One Item to Inventory");
       }
     } catch (error) {
       setError("Failed to create shared resource listing");
@@ -135,7 +161,7 @@ export default function CreateInventoryPage() {
   return (
     <div className="p-3 max-w-3xl mx-auto min-h-screen">
       <h1 className="text-3xl text-center my-7 font-extrabold underline text-blue-950 dark:text-slate-300">
-        Create Inventory Listing
+        Update Inventory Listing
       </h1>
       <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
         <div className="flex flex-col gap-4 sm:flex-row justify-between">
@@ -160,8 +186,12 @@ export default function CreateInventoryPage() {
             <option value="Recycling Containers">Recycling Containers</option>
             <option value="Shredders">Shredders</option>
             <option value="Waste Bags">Waste Bags</option>
-            <option value="Waste Collection Trucks">Waste Collection Trucks</option>
-            <option value="Hazardous Waste Containers">Hazardous Waste Containers</option>
+            <option value="Waste Collection Trucks">
+              Waste Collection Trucks
+            </option>
+            <option value="Hazardous Waste Containers">
+              Hazardous Waste Containers
+            </option>
             <option value="Incinerators">Incinerators</option>
             <option value="Waste Compactors">Waste Compactors</option>
             <option value="Landfill Equipment">Landfill Equipment</option>
@@ -341,7 +371,7 @@ export default function CreateInventoryPage() {
           gradientDuoTone="tealToLime"
           className="uppercase"
         >
-          Create Inventory Item Listing
+          Update Inventory Item Listing
         </Button>
         {error && (
           <Alert className="mt-7 py-3 bg-gradient-to-r from-red-100 via-red-300 to-red-400 shadow-shadowOne text-center text-red-600 text-base tracking-wide animate-bounce">

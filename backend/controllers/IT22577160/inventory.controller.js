@@ -82,14 +82,48 @@ export const getInventoryItems = async (req, res, next) => {
   }
 };
 
-// Delete a shared resource
+// Delete a inventory item
 export const deleteInventoryItems = async (req, res, next) => {
-  if(!req.user.EquipmentInventoryManger || req.user.id !== req.params.userId) {
-     return next(errorHandler(403, "You are not authorized to delete this resource"))
+  // Check if the user is authorized to delete the resource
+  if (!req.user.EquipmentInventoryManger || req.user.id !== req.params.userId) {
+    return next(
+      errorHandler(403, "You are not authorized to delete this resource")
+    );
   }
   try {
-     await Inventory.findByIdAndDelete(req.params.postId);
-     res.status(200).json("The resource has been deleted successfully");
+    // Attempt to find and delete the inventory item by ID
+    await Inventory.findByIdAndDelete(req.params.postId);
+    res.status(200).json("The resource has been deleted successfully");
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+// Update a inventory item
+export const updateInventoryItems = async (req, res, next) => {
+  // Check if the user is authorized to update the resource
+  if(!req.user.EquipmentInventoryManger || req.user.id !== req.params.userId) {
+     return next(errorHandler(403, "You are not authorized to update this resource"))
+  }
+  try {
+    // Find the inventory item by ID and update its fields with the provided data
+     const updatedResource = await Inventory.findByIdAndUpdate(req.params.postId, {
+        $set: {
+           itemName: req.body.itemName,
+           description: req.body.description,
+           location: req.body.location,
+           category: req.body.category,
+           quantity: req.body.quantity,
+           type: req.body.type,
+           image: req.body.image,
+           condition: req.body.condition,
+           regularPrice: req.body.regularPrice,
+           discountPrice: req.body.discountPrice,
+           offer: req.body.offer,
+        },
+     }, { new: true });
+     res.status(200).json(updatedResource);
   } catch (error) {
      next(error);
   }

@@ -11,6 +11,7 @@ import SignUpPage from "./Pages/SignUpPage";
 import Dashboard from "./Pages/Dashboard";
 import PrivateRoute from "./components/PrivateRoute";
 import CreateInventoryPage from "./Pages/IT22577160/CreateInventoryPage";
+import UpdateInventoryPage from "./Pages/IT22577160/UpdateInventoryPage";
 
 const App = () => {
   return (
@@ -29,6 +30,10 @@ const App = () => {
               <Route
                 path="/create-inventoryListing"
                 element={<CreateInventoryPage />}
+              />
+              <Route
+                path="/update-inventoryListing/:resourceId"
+                element={<UpdateInventoryPage />}
               />
             </Route>
           </Routes>
