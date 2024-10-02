@@ -81,3 +81,16 @@ export const getInventoryItems = async (req, res, next) => {
     next(error);
   }
 };
+
+// Delete a shared resource
+export const deleteInventoryItems = async (req, res, next) => {
+  if(!req.user.EquipmentInventoryManger || req.user.id !== req.params.userId) {
+     return next(errorHandler(403, "You are not authorized to delete this resource"))
+  }
+  try {
+     await Inventory.findByIdAndDelete(req.params.postId);
+     res.status(200).json("The resource has been deleted successfully");
+  } catch (error) {
+     next(error);
+  }
+}
