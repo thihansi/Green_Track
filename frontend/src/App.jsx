@@ -14,6 +14,7 @@ import CreateInventoryPage from "./Pages/IT22577160/CreateInventoryPage";
 import UpdateInventoryPage from "./Pages/IT22577160/UpdateInventoryPage";
 import MarketPlace from "./Pages/IT22577160/MarketPlace";
 import SearchInventoryItemsPage from "./Pages/IT22577160/SearchInventoryItemsPage";
+import InventoryItemPage from "./Pages/IT22577160/InventoryItemPage";
 
 const App = () => {
   return (
@@ -29,6 +30,7 @@ const App = () => {
             <Route path="/signUp" element={<SignUpPage />} />
             <Route path="/marketPlace" element={<MarketPlace />} />
             <Route path="/searchInventoryItems" element={<SearchInventoryItemsPage />} />
+            <Route path="/sharedResource/:resourceSlug" element={<InventoryItemPage />} />
             <Route element={<PrivateRoute />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route

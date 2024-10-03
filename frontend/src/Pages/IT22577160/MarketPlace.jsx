@@ -173,7 +173,7 @@ export default function MarketPlace() {
                     </Link>
                     <div className="p-3 flex flex-col gap-2">
                       <p className="text-lg font-semibold line-clamp-2">
-                        {resource.title}
+                        {resource.itemName}
                       </p>
                       <div className="flex justify-between">
                         <span className="italic text-sm">
