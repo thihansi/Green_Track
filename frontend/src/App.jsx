@@ -11,6 +11,9 @@ import SignUpPage from "./Pages/SignUpPage";
 import Dashboard from "./Pages/Dashboard";
 import PrivateRoute from "./components/PrivateRoute";
 
+import AdminPricingTable from "./components/IT22003546_Component/PricingTable";
+import BillView from "./components/IT22003546_Component/BillView";
+
 const App = () => {
   return (
     <>
@@ -23,6 +26,8 @@ const App = () => {
             <Route path="/contact" element={<ContactUs />} />
             <Route path="/signIn" element={<SignInPage />} />
             <Route path="/signUp" element={<SignUpPage />} />
+            <Route path="/pricing-list" element={<AdminPricingTable />} />
+            <Route path="/bill-view" element={<BillView />} />
             <Route element={<PrivateRoute />} >
               <Route path="/dashboard" element={<Dashboard />} />
             </Route>

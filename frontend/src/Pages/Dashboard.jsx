@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import DashSidebar from "../components/DashSidebar";
 import DashProfile from "../components/DashProfile";
+import DashPricing from "../components/IT22003546_Component/PricingTable";
+import DashBill from "../components/IT22003546_Component/BillView";
 
 export default function Dashboard() {
   const location = useLocation();
@@ -21,6 +23,12 @@ export default function Dashboard() {
       </div>
       {/* profile */}
       {tab === "profile" && <DashProfile />}
+      {/* pricing list */}
+      {tab === "pricing-list" && <DashPricing />}
+      {/* pricing list */}
+      {tab === "bill-view" && <DashBill />}
+      
     </div>
+    
   )
 }

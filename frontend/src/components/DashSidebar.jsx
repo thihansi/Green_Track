@@ -50,6 +50,35 @@ export default function DashSidebar() {
               Profile
             </Sidebar.Item>
           </Link>
+
+          {currentUser.isAdmin && ( // Render only if isAdmin is true
+                <>
+                    
+                    <Link to="/dashboard?tab=pricing-list">
+                        <Sidebar.Item
+                            active={tab === "pricing-list"}
+                            icon={HiUser}
+                            labelColor="dark"
+                            as="div"
+                        >
+                            Pricing Table
+                        </Sidebar.Item>
+                    </Link>
+                    </>
+            )}
+
+          <Link to="/dashboard?tab=bill-view">
+              <Sidebar.Item
+                  active={tab === "bill-view"}
+                  icon={HiUser}
+                  labelColor="dark"
+                  as="div"
+              >
+                  Bill View
+              </Sidebar.Item>
+          </Link>
+                
+          
           <Sidebar.Item
             icon={HiArrowSmRight}
             className="cursor-pointer"
