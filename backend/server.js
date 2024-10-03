@@ -4,12 +4,11 @@ import cookieParser from "cookie-parser";
 import dbConnection from "./dbConfig/dbConnection.js";
 import userRoutes from "./routes/user.route.js";
 import authRoutes from "./routes/auth.route.js";
-
-//
-
+import inventoryRoutes from "./routes/IT22577160/inventory.route.js";
+import checkoutRoutes from "./routes/IT22577160/checkout.route.js";
+import commentRoutes from "./routes/IT22577160/comment.route.js";
 import pricingRoutes from "./routes/IT22003546_Routes/pricing.route.js";
 import billingRoutes from "./routes/IT22003546_Routes/billing.route.js";
-
 import paymentRoutes from "./routes/IT22003546_Routes/payment.route.js";
 //
 
@@ -26,6 +25,14 @@ app.listen(3000, () => {
 
 app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);
+
+// IT22577160 - Inventory Management
+// Use the inventory routes
+app.use("/api/inventory", inventoryRoutes);
+// checkout routes
+app.use("/api/checkout", checkoutRoutes);
+// comment routes
+app.use("/api/comment", commentRoutes);
 
 //IT22003546
 app.use("/api/pricing", pricingRoutes)

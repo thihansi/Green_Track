@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import { signOutSuccess } from "../redux/user/userSlice";
 import { useSelector } from "react-redux";
+import { GrResources } from "react-icons/gr";
 
 export default function DashSidebar() {
   const { currentUser } = useSelector((state) => state.user);
@@ -21,19 +22,19 @@ export default function DashSidebar() {
 
   const handleSignOut = async () => {
     try {
-      const res = await fetch('/api/user/signout', {
-        method: 'POST'
-      })
-      const data = await res.json()
-      if(!res.ok) {
+      const res = await fetch("/api/user/signout", {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (!res.ok) {
         console.log(data.message);
       } else {
-        dispatch(signOutSuccess())
+        dispatch(signOutSuccess());
       }
     } catch (error) {
       console.log(error.message);
     }
-  }
+  };
 
   return (
     <Sidebar className="w-full md:w-56 shadow-md">
@@ -78,6 +79,19 @@ export default function DashSidebar() {
               </Sidebar.Item>
           </Link>
                 
+          {currentUser.EquipmentInventoryManger && (
+            <>
+              <Link to="/dashboard?tab=inventory">
+                <Sidebar.Item
+                  active={tab === "inventory"}
+                  icon={GrResources}
+                  as="div"
+                >
+                  Inventory
+                </Sidebar.Item>
+              </Link>
+            </>
+          )}
           
           <Sidebar.Item
             icon={HiArrowSmRight}
