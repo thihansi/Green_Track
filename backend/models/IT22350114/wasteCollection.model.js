@@ -67,12 +67,9 @@ const wasteCollectionSchema = new mongoose.Schema(
 );
 
 // Add indexes for performance optimization
-wasteCollectionSchema.index({ collectionId: 1 });
-wasteCollectionSchema.index({ residentId: 1, collectionDate: -1 });
+//wasteCollectionSchema.index({ collectionId: 1 });
+//wasteCollectionSchema.index({ residentId: 1, collectionDate: -1 });
 
 // Create the WasteCollection model
-const WasteCollection = mongoose.model(
-  "WasteCollection",
-  wasteCollectionSchema
-);
+const WasteCollection = mongoose.model("WasteCollection", wasteCollectionSchema);
 export default WasteCollection;
