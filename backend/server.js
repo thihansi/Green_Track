@@ -5,6 +5,7 @@ import dbConnection from "./dbConfig/dbConnection.js";
 import userRoutes from "./routes/user.route.js";
 import authRoutes from "./routes/auth.route.js";
 import inventoryRoutes from "./routes/IT22577160/inventory.route.js";
+import checkoutRoutes from "./routes/IT22577160/checkout.route.js";
 
 const app = express();
 dotenv.config();
@@ -23,6 +24,8 @@ app.use("/api/auth", authRoutes);
 // IT22577160 - Inventory Management
 // Use the inventory routes
 app.use("/api/inventory", inventoryRoutes);
+// checkout routes
+app.use("/api/checkout", checkoutRoutes);
 
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;

@@ -120,7 +120,7 @@ export default function MarketPlace() {
       <div className="p-3 bg-amber-100 dark:bg-slate-700">
         <div className="flex flex-col sm:flex-row p-3 border border-teal-500 justify-center items-center rounded-tl-3xl rounded-br-3xl text-center">
           <div className="flex justify-center flex-col flex-1">
-            <h2 className="text-2xl font-bold">CREDENZA</h2>
+            <h2 className="text-2xl font-bold">Waste Bins</h2>
             <p className="text-gray-500 my-2">
               {" "}
               Lorem ipsum dolor sit amet consectetur adipisicing elit.
