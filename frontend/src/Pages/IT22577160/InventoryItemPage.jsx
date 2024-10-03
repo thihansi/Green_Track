@@ -18,6 +18,7 @@ import {
   addToWishlist,
   removeFromWishlist,
 } from "../../redux/IT22577160/wishListSlice.js";
+import CommentSection from "../../components/IT22577160/CommentSection.jsx";
 
 export default function InventoryItemPage() {
   const { cart } = useSelector((state) => state.cart);
@@ -251,6 +252,7 @@ export default function InventoryItemPage() {
             {resources && resources.quantity + " In Stock"}
           </div>
         </div>
+        <CommentSection resourceId={resources._id} />
       </main>
     </>
   );
