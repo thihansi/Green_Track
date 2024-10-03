@@ -52,6 +52,7 @@ export default function DashSidebar() {
             </Sidebar.Item>
           </Link>
 
+
           {currentUser.isAdmin && ( // Render only if isAdmin is true
                 <>
                     
@@ -79,6 +80,7 @@ export default function DashSidebar() {
               </Sidebar.Item>
           </Link>
                 
+
           {currentUser.EquipmentInventoryManger && (
             <>
               <Link to="/dashboard?tab=inventory">
@@ -92,7 +94,7 @@ export default function DashSidebar() {
               </Link>
             </>
           )}
-          
+
           <Sidebar.Item
             icon={HiArrowSmRight}
             className="cursor-pointer"

@@ -7,6 +7,7 @@ import DashBill from "../components/IT22003546_Component/BillView";
 import DashInventory from "../components/IT22577160/DashInventory";
 
 
+
 export default function Dashboard() {
   const location = useLocation();
   const [tab, setTab] = useState("");
