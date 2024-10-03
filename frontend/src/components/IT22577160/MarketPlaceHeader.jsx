@@ -32,7 +32,7 @@ export default function MarketPlaceHeader() {
     const urlParams = new URLSearchParams(location.search);
     urlParams.set("searchTerm", searchTerm);
     const searchQuery = urlParams.toString();
-    // navigate(`/searchResource?${searchQuery}`);
+    navigate(`/searchInventoryItems?${searchQuery}`);
   };
 
   return (
