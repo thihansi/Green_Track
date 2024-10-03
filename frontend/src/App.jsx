@@ -12,6 +12,7 @@ import Dashboard from "./Pages/Dashboard";
 import PrivateRoute from "./components/PrivateRoute";
 import CreateInventoryPage from "./Pages/IT22577160/CreateInventoryPage";
 import UpdateInventoryPage from "./Pages/IT22577160/UpdateInventoryPage";
+import MarketPlace from "./Pages/IT22577160/MarketPlace";
 
 const App = () => {
   return (
@@ -25,6 +26,7 @@ const App = () => {
             <Route path="/contact" element={<ContactUs />} />
             <Route path="/signIn" element={<SignInPage />} />
             <Route path="/signUp" element={<SignUpPage />} />
+            <Route path="/marketPlace" element={<MarketPlace />} />
             <Route element={<PrivateRoute />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route
