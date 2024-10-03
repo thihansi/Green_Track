@@ -4,6 +4,8 @@ import DashSidebar from "../components/DashSidebar";
 import DashProfile from "../components/DashProfile";
 import DashPricing from "../components/IT22003546_Component/PricingTable";
 import DashBill from "../components/IT22003546_Component/BillView";
+import DashInventory from "../components/IT22577160/DashInventory";
+
 
 export default function Dashboard() {
   const location = useLocation();
@@ -27,7 +29,9 @@ export default function Dashboard() {
       {tab === "pricing-list" && <DashPricing />}
       {/* pricing list */}
       {tab === "bill-view" && <DashBill />}
-      
+      {/* Inventory */}
+      {tab === "inventory" && <DashInventory />}
+
     </div>
     
   )

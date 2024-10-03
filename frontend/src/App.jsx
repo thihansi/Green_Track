@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Header from "./components/Header"
+import Header from "./components/Header";
 import HomePage from "./Pages/HomePage";
 import AboutUsPage from "./Pages/AboutUsPage";
 import ContactUs from "./Pages/ContactUs";
@@ -10,6 +10,11 @@ import SignInPage from "./Pages/SignInPage";
 import SignUpPage from "./Pages/SignUpPage";
 import Dashboard from "./Pages/Dashboard";
 import PrivateRoute from "./components/PrivateRoute";
+import CreateInventoryPage from "./Pages/IT22577160/CreateInventoryPage";
+import UpdateInventoryPage from "./Pages/IT22577160/UpdateInventoryPage";
+import MarketPlace from "./Pages/IT22577160/MarketPlace";
+import SearchInventoryItemsPage from "./Pages/IT22577160/SearchInventoryItemsPage";
+import InventoryItemPage from "./Pages/IT22577160/InventoryItemPage";
 
 import AdminPricingTable from "./components/IT22003546_Component/PricingTable";
 import BillView from "./components/IT22003546_Component/BillView";
@@ -28,8 +33,20 @@ const App = () => {
             <Route path="/signUp" element={<SignUpPage />} />
             <Route path="/pricing-list" element={<AdminPricingTable />} />
             <Route path="/bill-view" element={<BillView />} />
-            <Route element={<PrivateRoute />} >
+            <Route path="/marketPlace" element={<MarketPlace />} />
+            <Route path="/searchInventoryItems" element={<SearchInventoryItemsPage />} />
+            <Route path="/sharedResource/:resourceSlug" element={<InventoryItemPage />} />
+            <Route element={<PrivateRoute />}>
+      
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route
+                path="/create-inventoryListing"
+                element={<CreateInventoryPage />}
+              />
+              <Route
+                path="/update-inventoryListing/:resourceId"
+                element={<UpdateInventoryPage />}
+              />
             </Route>
           </Routes>
         </div>
@@ -48,7 +65,7 @@ const App = () => {
         theme="dark"
       />
     </>
-  )
-}
+  );
+};
 
-export default App
+export default App;
