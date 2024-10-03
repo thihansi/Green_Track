@@ -1,7 +1,6 @@
 import express from "express";
 import { verifyToken } from "../../utils/verifyToken.js";
 import { createInventory, deleteInventoryItems, getInventoryItems, updateInventoryItems } from "../../controllers/IT22577160/inventory.controller.js";
-import { createInventory } from "../../controllers/IT22577160/inventory.controller.js";
 
 // Create a new router instance
 const router = express.Router();
