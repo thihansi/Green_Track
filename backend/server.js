@@ -7,6 +7,7 @@ import authRoutes from "./routes/auth.route.js";
 import inventoryRoutes from "./routes/IT22577160/inventory.route.js";
 import checkoutRoutes from "./routes/IT22577160/checkout.route.js";
 import commentRoutes from "./routes/IT22577160/comment.route.js";
+import wasteCollectionRoutes from "./routes/IT22350114/wasteCollection.route.js";
 
 const app = express();
 dotenv.config();
@@ -29,6 +30,9 @@ app.use("/api/inventory", inventoryRoutes);
 app.use("/api/checkout", checkoutRoutes);
 // comment routes
 app.use("/api/comment", commentRoutes);
+
+// IT22350114 - Real-Time Waste Update and Alert System
+app.use("/api/wasteCollection", wasteCollectionRoutes);
 
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
