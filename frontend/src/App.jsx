@@ -15,6 +15,9 @@ import UpdateInventoryPage from "./Pages/IT22577160/UpdateInventoryPage";
 import MarketPlace from "./Pages/IT22577160/MarketPlace";
 import SearchInventoryItemsPage from "./Pages/IT22577160/SearchInventoryItemsPage";
 import InventoryItemPage from "./Pages/IT22577160/InventoryItemPage";
+import AdminPricingTable from "./components/IT22003546_Component/PricingTable";
+import BillView from "./components/IT22003546_Component/BillView";
+
 
 const App = () => {
   return (
@@ -28,6 +31,9 @@ const App = () => {
             <Route path="/contact" element={<ContactUs />} />
             <Route path="/signIn" element={<SignInPage />} />
             <Route path="/signUp" element={<SignUpPage />} />
+            <Route path="/pricing-list" element={<AdminPricingTable />} />
+            <Route path="/bill-view" element={<BillView />} />
+
             <Route path="/marketPlace" element={<MarketPlace />} />
             <Route path="/searchInventoryItems" element={<SearchInventoryItemsPage />} />
             <Route path="/sharedResource/:resourceSlug" element={<InventoryItemPage />} />
