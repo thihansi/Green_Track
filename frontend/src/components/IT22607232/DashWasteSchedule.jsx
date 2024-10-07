@@ -1,10 +1,32 @@
-
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Button } from "flowbite-react";
-import Schedule from "./S_images/Schedule.png";
+import { Line, Pie } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  ArcElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+} from 'chart.js';
+import wasteDash from './S_images/wasteDash.png'; 
 
+// Register ChartJS elements
+ChartJS.register(
+  ArcElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const DashWasteSchedule = () => {
   const { currentUser } = useSelector((state) => state.user);
@@ -25,49 +47,83 @@ const DashWasteSchedule = () => {
       }
       setShowSchedules(data);
     } catch (error) {
-      showScheduleError(true);
+      setShowScheduleError(true);
     }
   };
 
+  const pieData = {
+    labels: ["Malabe", "Battaramulla", "Wellampitiya", "Nugegoda"],
+    datasets: [{
+      data: [30, 50, 20, 70],
+      backgroundColor: ["#4BC0C0", "#36A2EB", "#FFCE56", "#4CAF50"]
+    }]
+  };
+
+  const lineData = {
+    labels: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+    datasets: [
+      {
+        label: "Waste In/Out",
+        data: [300, 500, 200, 450, 320],
+        borderColor: "#4BC0C0",
+        backgroundColor: "rgba(75, 192, 192, 0.2)",
+        fill: true
+      }
+    ]
+  };
+
   return (
-    <div className="p-3 max-w-full mx-auto">
-
-<div className="relative min-h-screen"> {/* Set to min-h-screen to cover the full viewport height */}
-  {/* Background Image */}
-  <img
-    src={Schedule}
-    alt="Background Schedule"
-    className="absolute inset-0 w-full h-full object-cover opacity-50" 
-    style={{
-      transform: "scale(1.3)", 
-     
-    }}
-  />
-      
-        <div
-          className="max-w-6xl mx-auto p-3 flex flex-col gap-8 py-7"
-          style={{ position: "relative", zIndex: 1 }}
-        >
-          <h1 className="text-center mt-7 font-extrabold text-3xl underline text-black dark:text-white">
-            Request Waste Collection
-          </h1>
+    <div className="min-h-screen flex flex-col items-center justify-center  text-white p-8">
+      {/* Buttons on top */}
+      <div className="flex justify-center gap-6 mb-6">
+        <Button className="rounded-md" gradientDuoTone="tealToLime">
+          <Link to="/create-request">Request Waste Collection</Link>
+        </Button>
+        <Button className="rounded-md" gradientDuoTone="tealToLime">
+          <Link to="/request-table">Show Placed Requests</Link>
+        </Button>
        
-          <Button className="rounded-md" gradientDuoTone="tealToLime">
-                <Link to="/create-request" >Request Waste collection</Link>
-            </Button>
+      </div>
 
-            <Button className="rounded-md" gradientDuoTone='tealToLime'>
-              <Link to="/request-table">Show Placed Requests</Link>
-            </Button>
+      {/* Content Section */}
+      <div className="flex flex-col items-center w-full gap-6">
+        {/* Stats Overview */}
+        <div className="grid grid-cols-3 gap-6 w-full">
+          <div className="p-6 bg-slate-300 text-black shadow-md rounded-lg">
+            <h3 className="font-bold text-lg">Requests📝🚛</h3>
+            <p className="text-3xl">21</p>
+          </div>
+          <div className="p-6 bg-slate-300 text-black shadow-md rounded-lg">
+            <h3 className="font-bold text-lg">Pending🔖📜</h3>
+            <p className="text-3xl">2</p>
+          </div>
+          <div className="p-6 bg-slate-300 text-black shadow-md rounded-lg">
+            <h3 className="font-bold text-lg">Achieved⏳🎉</h3>
+            <p className="text-3xl">19</p>
+          </div>
+        </div>
 
-            <Button className="rounded-md" gradientDuoTone='tealToLime'>
-              <Link to="/">Track Request Status</Link>
-            </Button>
+        {/* Charts Section */}
+        <div className="flex flex-row gap-6 w-full">
+          {/* Pie Chart */}
+          <div className="flex-1 p-6 bg-emerald-300 text-black shadow-md rounded-lg">
+            <h3 className="font-bold text-lg">Customer Based Region</h3>
+            <Pie data={pieData} />
           </div>
 
+          {/* Line Chart */}
+          <div className="flex-1 p-6  bg-emerald-300 text-black shadow-md rounded-lg">
+            <h3 className="font-bold text-lg">Waste In & Out (7 Days)</h3>
+            <Line data={lineData} />
+          </div>
+
+          {/* Image Section */}
+          <div className="flex-1 flex items-center justify-center">
+            <img src={wasteDash} alt="Waste Dashboard" className="w-64 h-auto shadow-md rounded-lg" />
+          </div>
         </div>
       </div>
-   
+    </div>
   );
 };
 
