@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import {
@@ -12,11 +12,14 @@ import {
 const WasteCollectionForm = () => {
   const navigate = useNavigate();
   const { currentUser } = useSelector((state) => state.user);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+
+  const RECYCLABLE_TYPES = ["Paper", "Plastic", "Glass", "Metal"];
+  const NON_RECYCLABLE_TYPES = ["Food Waste", "Organic", "Hazardous", "Other"];
+
+  // Initialize formData with residentId as the user's username
   const [formData, setFormData] = useState({
     collectionId: "",
-    residentId: "",
+    residentId: currentUser?.username || "", // Use username as residentId
     collectionDate: "",
     status: "Scheduled",
     garbage: [
@@ -28,8 +31,18 @@ const WasteCollectionForm = () => {
     ],
   });
 
-  const RECYCLABLE_TYPES = ["Paper", "Plastic", "Glass", "Metal"];
-  const NON_RECYCLABLE_TYPES = ["Food Waste", "Organic", "Hazardous", "Other"];
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  // Update formData when currentUser changes
+  useEffect(() => {
+    if (currentUser) {
+      setFormData((prevData) => ({
+        ...prevData,
+        residentId: currentUser.username, // Set residentId to username when user is loaded
+      }));
+    }
+  }, [currentUser]);
 
   // Handle form field changes
   const handleChange = (e) => {
@@ -42,6 +55,13 @@ const WasteCollectionForm = () => {
     const { name, value } = e.target;
     const updatedGarbage = [...formData.garbage];
     updatedGarbage[index] = { ...updatedGarbage[index], [name]: value };
+
+    // If the wasteType is changed, reset the category to the first option based on the wasteType
+    if (name === "wasteType") {
+      const defaultCategory = value === "Recyclable" ? RECYCLABLE_TYPES[0] : NON_RECYCLABLE_TYPES[0];
+      updatedGarbage[index].category = defaultCategory;
+    }
+
     setFormData({ ...formData, garbage: updatedGarbage });
     console.log("Updated Garbage:", updatedGarbage);
   };
@@ -54,6 +74,7 @@ const WasteCollectionForm = () => {
     });
   };
 
+  // Submit form data
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Final Payload before submission:", JSON.stringify(formData, null, 2)); // Log the payload with better readability
@@ -73,7 +94,9 @@ const WasteCollectionForm = () => {
       if (!response.ok) {
         return setError(data.message || 'An error occurred');
       }
-      navigate('/dashboard?tab=waste-collection');
+
+      // Redirect to the WasteCollection page
+      navigate('/WasteCollection');
     } catch (err) {
       setError(err.message);
       setLoading(false);
@@ -102,7 +125,7 @@ const WasteCollectionForm = () => {
           />
         </div>
 
-        {/* Resident ID */}
+        {/* Resident ID (read-only) */}
         <div>
           <Label htmlFor="residentId">Resident ID</Label>
           <TextInput
@@ -110,9 +133,8 @@ const WasteCollectionForm = () => {
             type="text"
             name="residentId"
             value={formData.residentId}
-            onChange={handleChange}
-            placeholder="e.g., 6123abc4567def8901234567"
-            required
+            readOnly // Make residentId field read-only
+            className="bg-gray-200" // Optional: Make the field visually distinct as read-only
           />
         </div>
 
