@@ -51,7 +51,7 @@ const CalculateTotalPrice = () => {
         const calculateTotalCosts = () => {
             if (wasteData.length > 0 && pricingData.length > 0) {
                 const costs = wasteData.map(residentWaste => {
-                    const garbageDetails = residentWaste.garbage.map(item => {
+                    const garbageDetails = residentWaste.garbage.filter(item => item.wasteType === "Non-Recyclable").map(item => {
                         const pricingItem = pricingData.find(p => p.item === item.category);
                         const cost = item.weight * (pricingItem ? pricingItem.pricePerUnit : 0);
                         return {
@@ -63,7 +63,7 @@ const CalculateTotalPrice = () => {
                         };
                     });
 
-                    const recyclingDetails = residentWaste.recycling.map(item => {
+                    const recyclingDetails = residentWaste.garbage.filter(item => item.wasteType === "Recyclable").map(item => {
                         const pricingItem = pricingData.find(p => p.item === item.category);
                         const reward = item.weight * (pricingItem ? pricingItem.pricePerUnit : 0);
                         return {
@@ -77,6 +77,7 @@ const CalculateTotalPrice = () => {
                     const totalGarbageCost = garbageDetails.reduce((total, item) => total + item.cost, 0);
                     const totalRecyclingReward = recyclingDetails.reduce((total, item) => total + item.reward, 0);
                     const totalPrice = totalGarbageCost - totalRecyclingReward;
+                    console.log(totalPrice);
 
                     return {
                         residentId: residentWaste.residentId,
