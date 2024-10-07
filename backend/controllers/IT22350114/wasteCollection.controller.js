@@ -1,5 +1,5 @@
 import WasteCollection from '../../models/IT22350114/wasteCollection.model.js';
-
+  
 // Create a new waste collection record
 export const createWasteCollection = async (req, res) => {
   const wasteCollection = new WasteCollection(req.body);
@@ -121,7 +121,3 @@ export const getWasteCollectionsByCollectionMonth = async (req, res) => {
 
 
 
-
-
-
-// Apply verifyToken middleware to all routes if needed

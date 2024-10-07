@@ -4,16 +4,18 @@ import { verifyToken } from '../../utils/verifyToken.js';
 
 const router = express.Router();
 
-// Apply verifyToken middleware globally to all routes except specific ones (if needed)
-router.use(verifyToken);
 
-// Define routes for Waste Collection management
+//error handling
+router.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
+});
 
 // Create new Inventory
-router.post('/create', createWasteCollection);
+router.post('/create', verifyToken, createWasteCollection);
 
 // Get all Inventory
-router.get('/get', getWasteCollections);
+router.get('/get', verifyToken, getWasteCollections);
 
 // Get single Inventory
 router.get('/fetch/:wasteCid', getWasteCollectionById);
@@ -29,11 +31,5 @@ router.get('/getByResidentId/:residentId', verifyToken, getWasteCollectionsByRes
 
 // Get waste collections by collection date
 router.get('/getByCollectionMonth/:collectionMonth', verifyToken, getWasteCollectionsByCollectionMonth);
-
-//error handling
-router.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).send('Something broke!');
-});
 
 export default router;
