@@ -4,6 +4,7 @@ import { verifyToken } from '../../utils/verifyToken.js';
 
 const router = express.Router();
 
+
 //error handling
 router.use((err, req, res, next) => {
     console.error(err.stack);

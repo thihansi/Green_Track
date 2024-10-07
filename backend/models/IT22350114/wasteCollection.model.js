@@ -71,8 +71,7 @@ const wasteCollectionSchema = new mongoose.Schema(
 //wasteCollectionSchema.index({ residentId: 1, collectionDate: -1 });
 
 // Create the WasteCollection model
-const WasteCollection = mongoose.model(
-  "WasteCollection",
-  wasteCollectionSchema
-);
+
+const WasteCollection = mongoose.model("WasteCollection", wasteCollectionSchema);
 export default WasteCollection;
+
