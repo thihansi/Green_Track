@@ -21,6 +21,7 @@ import DashWasteSchedule from "./components/IT22607232/DashWasteSchedule";
 import CreateRequestPage from "./Pages/IT22607232/CreateRequestPage";
 import RequestTable from "./Pages/IT22607232/RequestTable";
 import UpdateSchedules from "./Pages/IT22607232/UpdateRequest";
+import AllRequestsAdmin from "./components/IT22607232/AllRequestsAdmin";
 
 
 
@@ -57,6 +58,7 @@ const App = () => {
               <Route path="/create-request" element={<CreateRequestPage />} />
               <Route path="/request-table" element={<RequestTable />} />
               <Route path="/update-schedule/:requestid" element={<UpdateSchedules />} />
+              <Route path="/all-requests" element={<AllRequestsAdmin />} />
             </Route>
 
         

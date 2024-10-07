@@ -36,6 +36,11 @@ const WasteSheduleSchema = new mongoose.Schema(
       default: "Pending",
       required: true,
     },
+
+    userId: {
+      type: String,
+      required: true
+   },
   },
   { timestamps: true }
 );

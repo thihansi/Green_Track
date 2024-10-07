@@ -6,7 +6,7 @@ import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 
-const RequestTable = () => {
+const AllRequestsByAdmin = () => {
   const { currentUser } = useSelector((state) => state.user);
   const [showRequestError, setShowRequestError] = useState(false);
   const [showRequests, setShowRequests] = useState([]);
@@ -15,22 +15,17 @@ const RequestTable = () => {
   const [RequestIdToDelete, setRequestIdToDelete] = useState("");
 
   useEffect(() => {
-    if (currentUser && currentUser._id) {
-      handleShowRequests();
-    }
-  }, [currentUser]);
+    handleShowRequests();
+  }, [currentUser._id]);
 
   const handleShowRequests = async () => {
     try {
-      // Ensure to fetch requests for the logged-in user by passing the user ID
-      const res = await fetch(`/api/wasteSchedule/get-specific-requests/${currentUser._id}`);
+      const res = await fetch("/api/wasteSchedule/allschedules");
       const data = await res.json();
-
-      if (!res.ok || data.success === false) {
+      if (data.success === false) {
         setShowRequestError(true);
         return;
       }
-
       setShowRequests(data);
     } catch (error) {
       console.error("Error fetching schedules:", error);
@@ -44,7 +39,6 @@ const RequestTable = () => {
         `/api/wasteSchedule/deleteschedule/${RequestIdToDelete}`,
         { method: "DELETE" }
       );
-
       const data = await res.json();
       if (!res.ok) {
         console.log(data.message);
@@ -60,90 +54,52 @@ const RequestTable = () => {
     }
   };
 
-  const handleDownloadReport = () => {
-    const doc = new jsPDF({
-      orientation: "landscape", 
-    });
-    
+  const handleDownloadPDF = () => {
+    const doc = new jsPDF();
     const tableColumn = [
-      "Date", 
-      "RequestID", 
-      "CustomerName", 
-      "Category", 
-      "ScheduleDate", 
-      "Location", 
-      "Status"
+      "Date",
+      "RequestID",
+      "CustomerName",
+      "Category",
+      "ScheduleDate",
+      "Location",
+      "email",
+      "Additional_Note",
+      "Status",
     ];
-  
-    const tableRows = showRequests.map((request) => [
-      new Date(request.updatedAt).toLocaleDateString(),
-      request.RequestID,
-      request.CustomerName,
-      request.Category,
-      request.ScheduleDate,
-      request.Location,
-      request.Status
-    ]);
-  
-    // Set the styling for the PDF
-    doc.setFontSize(10);
-    doc.text(" Waste Collection Requests", 14, 22);
-    
-    // Calculate the width of the table
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const columnWidths = [25, 20, 40, 30, 30, 30, 25]; // widths of each column
-    const totalTableWidth = columnWidths.reduce((acc, width) => acc + width, 0) + (tableColumn.length - 1) * 5; // Adding padding between columns
-    
-    // Calculate the left margin to center the table
-    const leftMargin = (pageWidth - totalTableWidth) / 2;
-  
-    doc.autoTable({
-      head: [tableColumn],
-      body: tableRows,
-      styles: {
-        fillColor: [255, 255, 255],
-        textColor: [0, 0, 0],
-        fontSize: 8,
-        cellPadding: 5,
-        overflow: 'linebreak', 
-        cellWidth: 'auto',
-      },
-      headStyles: {
-        fillColor: [22, 160, 133],
-        textColor: [255, 255, 255],
-        fontStyle: 'bold',
-        cellPadding: 5,
-      },
-      margin: { top: 30, left: leftMargin }, 
-      theme: 'grid',
-      columnStyles: {
-        0: { cellWidth: 25 },  // Date
-        1: { cellWidth: 20 },  // RequestID
-        2: { cellWidth: 40 },  // CustomerName
-        3: { cellWidth: 30 },  // Category
-        4: { cellWidth: 30 },  // ScheduleDate
-        5: { cellWidth: 30 },  // Location
-        6: { cellWidth: 25 },  // Status
-      },
-      // Enable page breaking for long tables
-      pageBreak: 'auto', 
+    const tableRows = [];
+
+    showRequests.forEach((request) => {
+      const rowData = [
+        new Date(request.updatedAt).toLocaleDateString(),
+        request.RequestID,
+        request.CustomerName,
+        request.Category,
+        request.ScheduleDate,
+        request.Location,
+        request.email,
+        request.Additional_Note,
+        request.Status,
+      ];
+      tableRows.push(rowData);
     });
-  
-    // Save the PDF
-    doc.save("MyWasteCollectionRequests_report.pdf");
+
+    const d = new Date();
+    const filename = `Waste_Collection_Report_${d.getFullYear()}_${
+      d.getMonth() + 1
+    }_${d.getDate()}.pdf`;
+
+    doc.autoTable(tableColumn, tableRows, { startY: 20 });
+    doc.save(filename);
   };
-  
 
   return (
     <div className="w-full overflow-x-auto md:mx-auto p-5">
       <h1 className="text-2xl text-center font-bold text-teal-600 dark:text-lime-400 mb-5">
-        🚛Green Truck Waste Management System Pvt Ltd🚛
-        <br /><br />
-        <p>🚮🗑️My Waste Collection Requests 🗑️🚮</p>
+        Green Truck Waste Management System Pvt Ltd
       </h1>
-
       <Table hoverable className="shadow-lg border border-gray-300 dark:border-gray-600 rounded-lg">
-        <Table.Head className="bg-teal-500 text-black dark:white dark:bg-lime-600 rounded-t-lg">
+        <Table.Head className="bg-teal-500 text-white dark:bg-lime-600 rounded-t-lg">
           <Table.HeadCell>Date</Table.HeadCell>
           <Table.HeadCell>RequestID</Table.HeadCell>
           <Table.HeadCell>CustomerName</Table.HeadCell>
@@ -198,9 +154,9 @@ const RequestTable = () => {
       </Table>
 
       <Button
-        gradientDuoTone="tealToLime"
+         gradientDuoTone="tealToLime"
         className="rounded-md mt-5 bg-teal-500 hover:bg-teal-600 dark:bg-lime-500 dark:hover:bg-lime-600 text-black dark:text-black"
-        onClick={handleDownloadReport}
+        onClick={handleDownloadPDF}
       >
         Download PDF
       </Button>
@@ -231,4 +187,4 @@ const RequestTable = () => {
   );
 };
 
-export default RequestTable;
+export default AllRequestsByAdmin;

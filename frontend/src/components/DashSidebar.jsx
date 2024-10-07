@@ -91,17 +91,17 @@ export default function DashSidebar() {
               </Link>
             </>
           )}
-
-          <Link to="/dashboard?tab=waste-schedule">
+{currentUser.WasteAuthorityAdmin && (
+          <Link to="/all-requests">
             <Sidebar.Item
-              active={tab === "waste-schedule"}
+              active={tab === "View waste-schedules"}
               icon={HiTruck}
               as="div"
             >
               Schedule Waste
             </Sidebar.Item>
           </Link>
-
+          )}
           <Sidebar.Item
             icon={HiArrowSmRight}
             className="cursor-pointer"

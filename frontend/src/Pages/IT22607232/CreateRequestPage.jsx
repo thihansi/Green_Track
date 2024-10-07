@@ -16,7 +16,8 @@ const generateRequestId = () =>
 
 const ScheduleRequest = () => {
   const navigate = useNavigate();
-  const { currentUser } = useSelector((state) => state.user);
+  const { currentUser } = useSelector((state) => state.user); // Ensure currentUser has the logged-in user's data
+  
   const [formData, setFormData] = useState({
     RequestID: "",
     CustomerName: "",
@@ -25,12 +26,13 @@ const ScheduleRequest = () => {
     email: "",
     Additional_Note: "",
     Location: "",
-    Status: "Pending", // Default status
+    Status: "Initialized", // Default 
   });
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Handle form data changes
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -38,45 +40,66 @@ const ScheduleRequest = () => {
     });
   };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      if (formData.RequestID === currentUser.RequestID)
-        return setError("RequestID already exists");
-      setLoading(true);
-      setError("");
+    
+    // Reset error on submit
+    setError("");
 
-      const res = await fetch("/api/wasteSchedule/schedule", {
+    try {
+      setLoading(true);
+
+      // Log form data and user ID for debugging purposes
+      console.log("Payload:", {
+        ...formData,
+        userId: currentUser._id,
+      });
+
+      // Make the API request to create the waste collection request
+      const res = await fetch("/api/wasteSchedule/create-request", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${currentUser.token}`, // Ensure the authorization token is passed
         },
         body: JSON.stringify({
           ...formData,
-          userRef: currentUser._id,
+          userId: currentUser._id, // Add userId from logged-in user
         }),
       });
-      const data = await res.json();
-      if (data.success) {
-        const subject = data.RequestID;
 
-        const text = `RequestID: ${data.RequestID}\nCustomerName: ${data.CustomerName}\nScheduleDate: ${data.ScheduleDate}\nLocation: ${data.Location}\nCategory: ${data.Category}\nStatus: ${data.Status}`;
-        await handleEmailSending(data.email, subject, text);
-        toast.success(
-          "Waste Collection Request Placed successfully! Email sent"
-        );
+      const data = await res.json();
+
+      // Log API response for debugging
+      console.log("API Response:", data);
+
+      // Check if request was successful
+      if (res.ok && data.success) {
+        // Success toast notification
+        toast.success("Waste Collection Request Placed successfully! Email sent");
+
+        // Reset form or navigate back
         navigate("/dashboard?tab=waste-schedule");
       } else {
-        toast.error(data.message || "Failed to place schedule!");
+        // Handle specific error status codes for better user feedback
+        if (res.status === 400) {
+          toast.error("Bad request. Please check your input.");
+        } else if (res.status === 500) {
+          toast.error("Server error. Please try again later.");
+        } else {
+          toast.error(data.message || "Failed to place schedule!");
+        }
       }
 
-      setLoading(false);
     } catch (error) {
-      setError(error.message);
+      setError(error.message || "An error occurred while submitting.");
+    } finally {
       setLoading(false);
     }
   };
 
+  // Set the generated request ID 
   useEffect(() => {
     const generatedID = generateRequestId();
     setFormData((prevFormData) => ({
@@ -85,21 +108,11 @@ const ScheduleRequest = () => {
     }));
   }, []);
 
-  const handleEmailSending = async (to, subject, text) => {
-    try {
-      await fetch(`/api/wasteSchedule/sendEmail/${to}/${subject}/${text}`, {
-        method: "POST",
-      });
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-
   return (
     <div className="min-h-screen mt-20 bg-white dark:bg-gray-800">
       <main>
-        <h1 className="text-3xl text-center mt-6 font-extrabold  text-lime-600 dark:text-lime-300">
-          🚛 Request Waste Collection🚛
+        <h1 className="text-3xl text-center mt-6 font-extrabold text-lime-600 dark:text-lime-300">
+          🚛 Request Waste Collection 🚛
         </h1>
       </main>
       <div className="flex p-3 w-full max-w-lg mx-auto flex-col mt-10 bg-white dark:bg-gray-700 rounded-lg shadow-lg border border-lime-300 dark:border-lime-600">
@@ -128,12 +141,13 @@ const ScheduleRequest = () => {
               className="border-lime-300 dark:border-lime-600"
             />
           </div>
+
           <div>
             <Label value="Category" />
             <Select
-              onChange={(e) =>
-                setFormData({ ...formData, Category: e.target.value })
-              }
+              name="Category"
+              onChange={handleChange}
+              value={formData.Category}
               className="border-lime-300 dark:border-lime-600"
             >
               <option value="">Select a Category</option>
@@ -150,6 +164,7 @@ const ScheduleRequest = () => {
               min={new Date().toISOString().split("T")[0]}
               required
               onChange={handleChange}
+              value={formData.ScheduleDate}
               className="border-lime-300 dark:border-lime-600"
             />
           </div>
@@ -210,6 +225,7 @@ const ScheduleRequest = () => {
           >
             {loading ? "Scheduling..." : "Place Request"}
           </Button>
+
           {error && (
             <Alert className="mt-7 py-3 bg-gradient-to-r from-red-100 via-red-300 to-red-400 shadow-md text-center text-red-600 text-base tracking-wide animate-bounce">
               {error}

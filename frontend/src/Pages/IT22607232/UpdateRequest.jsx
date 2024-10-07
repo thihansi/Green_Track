@@ -152,8 +152,8 @@ const UpdateSchedules = () => {
             className="border-lime-300 dark:border-lime-600"
           >
             <option value="">Select a Category</option>
-            <option value="Elavator">Regular</option>
-            <option value="Pest Control">Special</option>
+            <option value="Regular">Regular</option>
+            <option value="Special">Special</option>
           </Select>
 
           <div>
