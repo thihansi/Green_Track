@@ -92,8 +92,6 @@ export default function DashSidebar() {
             </>
           )}
 
-          {currentUser.WasteCollectionManager && ( // Render only if WasteCollectionManager is true
-            <>
               <Link to="/dashboard?tab=waste-collection">
                 <Sidebar.Item
                   active={tab === "waste-collection"}
@@ -104,8 +102,6 @@ export default function DashSidebar() {
                   Waste Collection
                 </Sidebar.Item>
               </Link>
-            </>
-          )}
 
           <Sidebar.Item
             icon={HiArrowSmRight}
