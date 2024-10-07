@@ -1,13 +1,14 @@
-// WasteCollectionList.jsx
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Button, Alert } from "flowbite-react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 const WasteCollectionList = () => {
   const { currentUser } = useSelector((state) => state.user);
   const [wasteCollections, setWasteCollections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const navigate = useNavigate(); // Initialize useNavigate
 
   useEffect(() => {
     const fetchWasteCollections = async () => {
@@ -65,9 +66,8 @@ const WasteCollectionList = () => {
   };
 
   const handleUpdate = (collection) => {
-    // Navigate to the update form with the collection data
-    // Assuming you have a route for updating the waste collection
-    // Example: navigate(`/update-waste-collection/${collection._id}`);
+    // Navigate to the update form with the collection ID
+    navigate(`/update/${collection._id}`);
   };
 
   if (loading) return <div>Loading...</div>;

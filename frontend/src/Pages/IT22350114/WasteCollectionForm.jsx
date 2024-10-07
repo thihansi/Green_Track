@@ -1,49 +1,65 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import {
-  Button,
-  Label,
-  TextInput,
-  Select,
-  Alert,
-} from "flowbite-react";
+import { useNavigate, useParams } from "react-router-dom"; // Import useParams for route parameters
+import { Button, Label, TextInput, Select, Alert } from "flowbite-react";
 
 const WasteCollectionForm = () => {
   const navigate = useNavigate();
   const { currentUser } = useSelector((state) => state.user);
+  const { collectionId } = useParams(); // Get the collectionId from route parameters
 
   const RECYCLABLE_TYPES = ["Paper", "Plastic", "Glass", "Metal"];
   const NON_RECYCLABLE_TYPES = ["Food Waste", "Organic", "Hazardous", "Other"];
 
-  // Initialize formData with residentId as the user's username
   const [formData, setFormData] = useState({
     collectionId: "",
-    residentId: currentUser?.username || "", // Use username as residentId
+    residentId: currentUser?.username || "",
     collectionDate: "",
     status: "Scheduled",
     garbage: [
       {
         wasteType: "Recyclable",
-        category: "Paper", // Set a default category value for initial render
+        category: "Paper",
         weight: "",
       },
     ],
   });
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
-  // Update formData when currentUser changes
-  useEffect(() => {
-    if (currentUser) {
-      setFormData((prevData) => ({
-        ...prevData,
-        residentId: currentUser.username, // Set residentId to username when user is loaded
-      }));
-    }
-  }, [currentUser]);
-
+  // Fetch the waste collection data for the update
+ // Fetch the waste collection data for the update
+useEffect(() => {
+    const fetchWasteCollectionData = async () => {
+      if (collectionId) {
+        try {
+          const response = await fetch(
+            `/api/wasteCollection/fetch/${collectionId}`
+          );
+          if (!response.ok) {
+            throw new Error("Failed to fetch waste collection data");
+          }
+          const data = await response.json();
+          
+          // Convert collectionDate to YYYY-MM-DD format
+          const formattedDate = new Date(data.collectionDate).toISOString().split('T')[0];
+  
+          // Set formData with formatted date
+          setFormData({
+            ...data,
+            collectionDate: formattedDate, // Set the formatted date
+            residentId: currentUser?.username || "", // Make sure residentId is also set
+          });
+        } catch (err) {
+          setError(err.message);
+        }
+      }
+    };
+  
+    fetchWasteCollectionData();
+  }, [collectionId, currentUser.username]);
+  
   // Handle form field changes
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -58,45 +74,54 @@ const WasteCollectionForm = () => {
 
     // If the wasteType is changed, reset the category to the first option based on the wasteType
     if (name === "wasteType") {
-      const defaultCategory = value === "Recyclable" ? RECYCLABLE_TYPES[0] : NON_RECYCLABLE_TYPES[0];
+      const defaultCategory =
+        value === "Recyclable" ? RECYCLABLE_TYPES[0] : NON_RECYCLABLE_TYPES[0];
       updatedGarbage[index].category = defaultCategory;
     }
 
     setFormData({ ...formData, garbage: updatedGarbage });
-    console.log("Updated Garbage:", updatedGarbage);
   };
 
   // Add a new garbage item
   const addGarbageItem = () => {
     setFormData({
       ...formData,
-      garbage: [...formData.garbage, { wasteType: 'Recyclable', category: 'Paper', weight: '' }],
+      garbage: [
+        ...formData.garbage,
+        { wasteType: "Recyclable", category: "Paper", weight: "" },
+      ],
     });
   };
 
-  // Submit form data
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Final Payload before submission:", JSON.stringify(formData, null, 2)); // Log the payload with better readability
+    console.log(
+      "Final Payload before submission:",
+      JSON.stringify(formData, null, 2)
+    );
 
     try {
       setLoading(true);
-      setError('');
+      setError("");
+
+      // Make sure to use the _id from formData (if you set it from fetch)
       const payload = { ...formData, userRef: currentUser._id };
-      const response = await fetch('/api/wasteCollection/create', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        `/api/wasteCollection/update/${formData._id}`, // Ensure you use the MongoDB _id
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }
+      );
 
       const data = await response.json();
       setLoading(false);
       if (!response.ok) {
-        return setError(data.message || 'An error occurred');
+        return setError(data.message || "An error occurred");
       }
 
-      // Redirect to the WasteCollection page
-      navigate('/WasteCollection');
+      navigate("/WasteCollection");
     } catch (err) {
       setError(err.message);
       setLoading(false);
@@ -105,11 +130,12 @@ const WasteCollectionForm = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
-      <h1 className="text-3xl font-bold text-center mb-6">Waste Collection Form</h1>
-      
-      {/* Display error message */}
+      <h1 className="text-3xl font-bold text-center mb-6">
+        {collectionId ? "Update Waste Collection" : "Waste Collection Form"}
+      </h1>
+
       {error && <Alert color="failure">{error}</Alert>}
-      
+
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Collection ID */}
         <div>
@@ -133,8 +159,8 @@ const WasteCollectionForm = () => {
             type="text"
             name="residentId"
             value={formData.residentId}
-            readOnly // Make residentId field read-only
-            className="bg-gray-200" // Optional: Make the field visually distinct as read-only
+            readOnly
+            className="bg-gray-200"
           />
         </div>
 
@@ -170,7 +196,10 @@ const WasteCollectionForm = () => {
         <div>
           <h2 className="text-xl font-semibold">Garbage Items</h2>
           {formData.garbage.map((garbageItem, index) => (
-            <div key={index} className="border p-4 rounded-lg space-y-4 mb-4 bg-gray-50">
+            <div
+              key={index}
+              className="border p-4 rounded-lg space-y-4 mb-4 bg-gray-50"
+            >
               <h4 className="text-lg font-bold">Garbage Item {index + 1}</h4>
 
               {/* Waste Type */}
@@ -197,13 +226,14 @@ const WasteCollectionForm = () => {
                   onChange={(e) => handleGarbageChange(index, e)}
                   required
                 >
-                  {(garbageItem.wasteType === 'Recyclable' ? RECYCLABLE_TYPES : NON_RECYCLABLE_TYPES).map(
-                    (type) => (
-                      <option key={type} value={type}>
-                        {type}
-                      </option>
-                    )
-                  )}
+                  {(garbageItem.wasteType === "Recyclable"
+                    ? RECYCLABLE_TYPES
+                    : NON_RECYCLABLE_TYPES
+                  ).map((type) => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))}
                 </Select>
               </div>
 
@@ -230,8 +260,13 @@ const WasteCollectionForm = () => {
         </div>
 
         {/* Submit Button */}
-        <Button type="submit" color="success" className="w-full" disabled={loading}>
-          {loading ? 'Submitting...' : 'Submit'}
+        <Button
+          type="submit"
+          color="success"
+          className="w-full"
+          disabled={loading}
+        >
+          {loading ? "Submitting..." : "Submit"}
         </Button>
       </form>
     </div>

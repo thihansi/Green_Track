@@ -19,7 +19,7 @@ import AdminPricingTable from "./components/IT22003546_Component/PricingTable";
 import BillView from "./components/IT22003546_Component/BillView";
 import WasteCollection from "./Pages/IT22350114/WasteCollection";
 import WasteCollectionForm from "./Pages/IT22350114/WasteCollectionForm";
-import UpdateWasteCollectionForm from "./Pages/IT22350114/UpdateWasteCollectionForm";
+import WasteCollectionList from "./components/IT22350114/WasteCollectionList";
 
 const App = () => {
   return (
@@ -54,7 +54,7 @@ const App = () => {
             {/* IT22350114 Routes */}
             <Route path="/wastecollection" element={<WasteCollection />} />
             <Route path="/wastecollection/form" element={<WasteCollectionForm />} />
-            <Route path="/update-waste-collection/:collectionId" element={<UpdateWasteCollectionForm />} />
+            <Route path="/update/:collectionId" element={<WasteCollectionForm />} /> 
 
 
             </Routes>
