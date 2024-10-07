@@ -5,7 +5,7 @@ import DashProfile from "../components/DashProfile";
 import DashPricing from "../components/IT22003546_Component/PricingTable";
 import DashBill from "../components/IT22003546_Component/BillView";
 import DashInventory from "../components/IT22577160/DashInventory";
-
+import DashWasteCollection from "../components/IT22350114/DashWasteCollection"
 
 
 export default function Dashboard() {
@@ -32,6 +32,9 @@ export default function Dashboard() {
       {tab === "bill-view" && <DashBill />}
       {/* Inventory */}
       {tab === "inventory" && <DashInventory />}
+      {/* Inventory */}
+      {tab === "waste-collection" && <DashWasteCollection />}
+
 
     </div>
     

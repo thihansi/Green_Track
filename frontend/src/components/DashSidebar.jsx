@@ -52,34 +52,31 @@ export default function DashSidebar() {
             </Sidebar.Item>
           </Link>
 
-
           {currentUser.isAdmin && ( // Render only if isAdmin is true
-                <>
-                    
-                    <Link to="/dashboard?tab=pricing-list">
-                        <Sidebar.Item
-                            active={tab === "pricing-list"}
-                            icon={HiUser}
-                            labelColor="dark"
-                            as="div"
-                        >
-                            Pricing Table
-                        </Sidebar.Item>
-                    </Link>
-                    </>
-            )}
-
-          <Link to="/dashboard?tab=bill-view">
-              <Sidebar.Item
-                  active={tab === "bill-view"}
+            <>
+              <Link to="/dashboard?tab=pricing-list">
+                <Sidebar.Item
+                  active={tab === "pricing-list"}
                   icon={HiUser}
                   labelColor="dark"
                   as="div"
-              >
-                  Bill View
-              </Sidebar.Item>
+                >
+                  Pricing Table
+                </Sidebar.Item>
+              </Link>
+            </>
+          )}
+
+          <Link to="/dashboard?tab=bill-view">
+            <Sidebar.Item
+              active={tab === "bill-view"}
+              icon={HiUser}
+              labelColor="dark"
+              as="div"
+            >
+              Bill View
+            </Sidebar.Item>
           </Link>
-                
 
           {currentUser.EquipmentInventoryManger && (
             <>
@@ -90,6 +87,21 @@ export default function DashSidebar() {
                   as="div"
                 >
                   Inventory
+                </Sidebar.Item>
+              </Link>
+            </>
+          )}
+
+          {currentUser.WasteCollectionManager && ( // Render only if WasteCollectionManager is true
+            <>
+              <Link to="/dashboard?tab=waste-collection">
+                <Sidebar.Item
+                  active={tab === "waste-collection"}
+                  icon={HiUser}
+                  labelColor="dark"
+                  as="div"
+                >
+                  Waste Collection
                 </Sidebar.Item>
               </Link>
             </>

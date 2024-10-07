@@ -17,7 +17,8 @@ import SearchInventoryItemsPage from "./Pages/IT22577160/SearchInventoryItemsPag
 import InventoryItemPage from "./Pages/IT22577160/InventoryItemPage";
 import AdminPricingTable from "./components/IT22003546_Component/PricingTable";
 import BillView from "./components/IT22003546_Component/BillView";
-
+import WasteCollection from "./Pages/IT22350114/WasteCollection";
+import WasteCollectionForm from "./Pages/IT22350114/WasteCollectionForm";
 
 const App = () => {
   return (
@@ -48,7 +49,13 @@ const App = () => {
                 element={<UpdateInventoryPage />}
               />
             </Route>
-          </Routes>
+
+            {/* IT22350114 Routes */}
+            <Route path="/wastecollection" element={<WasteCollection />} />
+            <Route path="/wastecollection/form" element={<WasteCollectionForm />} />
+
+
+            </Routes>
         </div>
         <FooterComponent />
       </Router>
