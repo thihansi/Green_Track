@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Button, Alert } from "flowbite-react";
+import { Button, Alert, Select } from "flowbite-react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 const WasteCollectionList = () => {
@@ -65,6 +65,35 @@ const WasteCollectionList = () => {
     }
   };
 
+  const handleStatusChange = async (collection, newStatus) => {
+    try {
+      const response = await fetch(
+        `/api/wasteCollection/update/${collection._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status: newStatus }),
+        }
+      );
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to update status");
+      }
+
+      // Update the local state with the new status
+      setWasteCollections((prev) =>
+        prev.map((item) =>
+          item._id === collection._id ? { ...item, status: newStatus } : item
+        )
+      );
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
   const handleUpdate = (collection) => {
     // Navigate to the update form with the collection ID
     navigate(`/update/${collection._id}`);
@@ -93,7 +122,16 @@ const WasteCollectionList = () => {
               <td className="border px-4 py-2">
                 {new Date(collection.collectionDate).toLocaleDateString()}
               </td>
-              <td className="border px-4 py-2">{collection.status}</td>
+              <td className="border px-4 py-2">
+                <Select
+                  value={collection.status}
+                  onChange={(e) => handleStatusChange(collection, e.target.value)}
+                >
+                  <option value="Scheduled">Scheduled</option>
+                  <option value="Collected">Collected</option>
+                  <option value="Cancelled">Cancelled</option>
+                </Select>
+              </td>
               <td className="border px-4 py-2">
                 <ul>
                   {collection.garbage.map((item, index) => (
