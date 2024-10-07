@@ -118,3 +118,10 @@ export const getWasteCollectionsByCollectionMonth = async (req, res) => {
         res.status(404).json({ message: error.message });
     }
 };
+
+
+
+
+
+
+// Apply verifyToken middleware to all routes if needed
