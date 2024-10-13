@@ -6,8 +6,6 @@ import DashPricing from "../components/IT22003546_Component/PricingTable";
 import DashBill from "../components/IT22003546_Component/BillView";
 import DashInventory from "../components/IT22577160/DashInventory";
 import WasteCollectionList from "../components/IT22350114/WasteCollectionList"
-import DashWasteSchedule from "../components/IT22607232/DashWasteSchedule";
-
 
 
 export default function Dashboard() {
