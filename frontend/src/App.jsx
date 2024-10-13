@@ -24,8 +24,8 @@ import CreateRequestPage from "./Pages/IT22607232/CreateRequestPage";
 import RequestTable from "./Pages/IT22607232/RequestTable";
 import UpdateSchedules from "./Pages/IT22607232/UpdateRequest";
 import AllRequestsAdmin from "./components/IT22607232/AllRequestsAdmin";
+import UserWasteCollectionList from "./components/IT22350114/UserWasteCollectionList";
 import WasteRequestSchedulePage from "./Pages/IT22607232/WasteRequestSchedulePage";
-
 
 const App = () => {
   return (
@@ -67,7 +67,8 @@ const App = () => {
             <Route path="/wastecollection" element={<WasteCollection />} />
             <Route path="/wastecollection/form" element={<WasteCollectionForm />} />
             <Route path="/update/:collectionId" element={<WasteCollectionForm />} /> 
-        
+            <Route path="/user/wasteCollection" element={<UserWasteCollectionList />} /> 
+
           </Routes>
         </div>
         <FooterComponent />
