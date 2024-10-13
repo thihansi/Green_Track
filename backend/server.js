@@ -64,4 +64,6 @@ app.use((err, req, res, next) => {
   });
 });
 
+
+// Export the app instance for testing
 export default app;
