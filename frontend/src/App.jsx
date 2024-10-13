@@ -17,12 +17,14 @@ import SearchInventoryItemsPage from "./Pages/IT22577160/SearchInventoryItemsPag
 import InventoryItemPage from "./Pages/IT22577160/InventoryItemPage";
 import AdminPricingTable from "./components/IT22003546_Component/PricingTable";
 import BillView from "./components/IT22003546_Component/BillView";
+import WasteCollection from "./Pages/IT22350114/WasteCollection";
+import WasteCollectionForm from "./Pages/IT22350114/WasteCollectionForm";
+import WasteCollectionList from "./components/IT22350114/WasteCollectionList";
 import DashWasteSchedule from "./components/IT22607232/DashWasteSchedule";
 import CreateRequestPage from "./Pages/IT22607232/CreateRequestPage";
 import RequestTable from "./Pages/IT22607232/RequestTable";
 import UpdateSchedules from "./Pages/IT22607232/UpdateRequest";
 import AllRequestsAdmin from "./components/IT22607232/AllRequestsAdmin";
-
 
 
 const App = () => {
@@ -61,6 +63,10 @@ const App = () => {
               <Route path="/all-requests" element={<AllRequestsAdmin />} />
             </Route>
 
+            {/* IT22350114 Routes */}
+            <Route path="/wastecollection" element={<WasteCollection />} />
+            <Route path="/wastecollection/form" element={<WasteCollectionForm />} />
+            <Route path="/update/:collectionId" element={<WasteCollectionForm />} /> 
         
           </Routes>
         </div>

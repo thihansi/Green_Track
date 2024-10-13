@@ -91,6 +91,18 @@ export default function DashSidebar() {
               </Link>
             </>
           )}
+
+              <Link to="/dashboard?tab=waste-collection">
+                <Sidebar.Item
+                  active={tab === "waste-collection"}
+                  icon={HiUser}
+                  labelColor="dark"
+                  as="div"
+                >
+                  Waste Collection
+                </Sidebar.Item>
+              </Link>
+
 {currentUser.WasteAuthorityAdmin && (
           <Link to="/all-requests">
             <Sidebar.Item
