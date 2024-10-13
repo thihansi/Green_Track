@@ -24,7 +24,8 @@ import CreateRequestPage from "./Pages/IT22607232/CreateRequestPage";
 import RequestTable from "./Pages/IT22607232/RequestTable";
 import UpdateSchedules from "./Pages/IT22607232/UpdateRequest";
 import AllRequestsAdmin from "./components/IT22607232/AllRequestsAdmin";
-import UserWasteCollectionList from "./components/IT22350114/UserWasteCollectionList";import WasteRequestSchedulePage from "./Pages/IT22607232/WasteRequestSchedulePage";
+import UserWasteCollectionList from "./components/IT22350114/UserWasteCollectionList";
+import WasteRequestSchedulePage from "./Pages/IT22607232/WasteRequestSchedulePage";
 
 
 const App = () => {
