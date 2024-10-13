@@ -4,6 +4,7 @@ import { verifyToken } from '../../utils/verifyToken.js';
 
 const router = express.Router();
 
+
 //error handling
 router.use((err, req, res, next) => {
     console.error(err.stack);
@@ -17,13 +18,13 @@ router.post('/create', verifyToken, createWasteCollection);
 router.get('/get', verifyToken, getWasteCollections);
 
 // Get single Inventory
-router.get('/fetch/:wasteCid', getWasteCollectionById);
+router.get('/fetch/:wasteCollectionId', getWasteCollectionById);
 
 // Update Inventory
-router.put('/update/:wasteCid', verifyToken, updateWasteCollection);
+router.put('/update/:wasteCollectionId', verifyToken, updateWasteCollection);
 
 // Delete Inventory
-router.delete('/delete/:wasteCid', verifyToken, deleteWasteCollection);
+router.delete('/delete/:wasteCollectionId', verifyToken, deleteWasteCollection);
 
 // Get waste collections by resident ID
 router.get('/getByResidentId/:residentId', verifyToken, getWasteCollectionsByResidentId);
