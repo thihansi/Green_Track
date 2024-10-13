@@ -20,12 +20,12 @@ import BillView from "./components/IT22003546_Component/BillView";
 import WasteCollection from "./Pages/IT22350114/WasteCollection";
 import WasteCollectionForm from "./Pages/IT22350114/WasteCollectionForm";
 import WasteCollectionList from "./components/IT22350114/WasteCollectionList";
-import DashWasteSchedule from "./components/IT22607232/DashWasteSchedule";
 import CreateRequestPage from "./Pages/IT22607232/CreateRequestPage";
 import RequestTable from "./Pages/IT22607232/RequestTable";
 import UpdateSchedules from "./Pages/IT22607232/UpdateRequest";
 import AllRequestsAdmin from "./components/IT22607232/AllRequestsAdmin";
 import UserWasteCollectionList from "./components/IT22350114/UserWasteCollectionList";
+import WasteRequestSchedulePage from "./Pages/IT22607232/WasteRequestSchedulePage";
 
 const App = () => {
   return (
@@ -56,7 +56,7 @@ const App = () => {
                 path="/update-inventoryListing/:resourceId"
                 element={<UpdateInventoryPage />}
               />
-               <Route path="/waste-schedule" element={<DashWasteSchedule />} />
+               <Route path="/waste-schedule" element={<WasteRequestSchedulePage />} />
               <Route path="/create-request" element={<CreateRequestPage />} />
               <Route path="/request-table" element={<RequestTable />} />
               <Route path="/update-schedule/:requestid" element={<UpdateSchedules />} />

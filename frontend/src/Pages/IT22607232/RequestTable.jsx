@@ -137,7 +137,7 @@ const RequestTable = () => {
   return (
     <div className="w-full overflow-x-auto md:mx-auto p-5">
       <h1 className="text-2xl text-center font-bold text-teal-600 dark:text-lime-400 mb-5">
-        🚛Green Truck Waste Management System Pvt Ltd🚛
+        🚛Green Track Waste Management System Pvt Ltd🚛
         <br /><br />
         <p>🚮🗑️My Waste Collection Requests 🗑️🚮</p>
       </h1>

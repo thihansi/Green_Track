@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Button } from "flowbite-react";
-import { Line, Pie } from 'react-chartjs-2';
+import { Line, Pie } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   ArcElement,
@@ -12,9 +12,9 @@ import {
   LineElement,
   Title,
   Tooltip,
-  Legend
-} from 'chart.js';
-import wasteDash from './S_images/wasteDash.png'; 
+  Legend,
+} from "chart.js";
+import wasteDash from "/wasteDash.png";
 
 // Register ChartJS elements
 ChartJS.register(
@@ -28,7 +28,7 @@ ChartJS.register(
   Legend
 );
 
-const DashWasteSchedule = () => {
+export default function WasteRequestSchedulePage() {
   const { currentUser } = useSelector((state) => state.user);
   const [showScheduleError, setShowScheduleError] = useState(false);
   const [showSchedules, setShowSchedules] = useState([]);
@@ -53,10 +53,12 @@ const DashWasteSchedule = () => {
 
   const pieData = {
     labels: ["Malabe", "Battaramulla", "Wellampitiya", "Nugegoda"],
-    datasets: [{
-      data: [30, 50, 20, 70],
-      backgroundColor: ["#4BC0C0", "#36A2EB", "#FFCE56", "#4CAF50"]
-    }]
+    datasets: [
+      {
+        data: [30, 50, 20, 70],
+        backgroundColor: ["#4BC0C0", "#36A2EB", "#FFCE56", "#4CAF50"],
+      },
+    ],
   };
 
   const lineData = {
@@ -67,9 +69,9 @@ const DashWasteSchedule = () => {
         data: [300, 500, 200, 450, 320],
         borderColor: "#4BC0C0",
         backgroundColor: "rgba(75, 192, 192, 0.2)",
-        fill: true
-      }
-    ]
+        fill: true,
+      },
+    ],
   };
 
   return (
@@ -82,7 +84,6 @@ const DashWasteSchedule = () => {
         <Button className="rounded-md" gradientDuoTone="tealToLime">
           <Link to="/request-table">Show Placed Requests</Link>
         </Button>
-       
       </div>
 
       {/* Content Section */}
@@ -119,12 +120,14 @@ const DashWasteSchedule = () => {
 
           {/* Image Section */}
           <div className="flex-1 flex items-center justify-center">
-            <img src={wasteDash} alt="Waste Dashboard" className="w-64 h-auto shadow-md rounded-lg" />
+            <img
+              src="wasteDash.png"
+              alt="Waste Dashboard"
+              className="w-64 h-auto shadow-md rounded-lg"
+            />
           </div>
         </div>
       </div>
     </div>
   );
-};
-
-export default DashWasteSchedule;
+}
