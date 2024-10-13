@@ -1,6 +1,6 @@
 import { Sidebar } from "flowbite-react";
 import { useEffect, useState } from "react";
-import { HiArrowSmRight, HiUser } from "react-icons/hi";
+import { HiArrowSmRight, HiTrash, HiTruck, HiUser } from "react-icons/hi";
 import { useDispatch } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import { signOutSuccess } from "../redux/user/userSlice";
@@ -52,34 +52,31 @@ export default function DashSidebar() {
             </Sidebar.Item>
           </Link>
 
-
           {currentUser.isAdmin && ( // Render only if isAdmin is true
-                <>
-                    
-                    <Link to="/dashboard?tab=pricing-list">
-                        <Sidebar.Item
-                            active={tab === "pricing-list"}
-                            icon={HiUser}
-                            labelColor="dark"
-                            as="div"
-                        >
-                            Pricing Table
-                        </Sidebar.Item>
-                    </Link>
-                    </>
-            )}
-
-          <Link to="/dashboard?tab=bill-view">
-              <Sidebar.Item
-                  active={tab === "bill-view"}
+            <>
+              <Link to="/dashboard?tab=pricing-list">
+                <Sidebar.Item
+                  active={tab === "pricing-list"}
                   icon={HiUser}
                   labelColor="dark"
                   as="div"
-              >
-                  Bill View
-              </Sidebar.Item>
+                >
+                  Pricing Table
+                </Sidebar.Item>
+              </Link>
+            </>
+          )}
+
+          <Link to="/dashboard?tab=bill-view">
+            <Sidebar.Item
+              active={tab === "bill-view"}
+              icon={HiUser}
+              labelColor="dark"
+              as="div"
+            >
+              Bill View
+            </Sidebar.Item>
           </Link>
-                
 
           {currentUser.EquipmentInventoryManger && (
             <>
@@ -95,6 +92,28 @@ export default function DashSidebar() {
             </>
           )}
 
+              <Link to="/dashboard?tab=waste-collection">
+                <Sidebar.Item
+                  active={tab === "waste-collection"}
+                  icon={HiUser}
+                  labelColor="dark"
+                  as="div"
+                >
+                  Waste Collection
+                </Sidebar.Item>
+              </Link>
+
+{currentUser.WasteAuthorityAdmin && (
+          <Link to="/all-requests">
+            <Sidebar.Item
+              active={tab === "View waste-schedules"}
+              icon={HiTruck}
+              as="div"
+            >
+              Schedule Waste
+            </Sidebar.Item>
+          </Link>
+          )}
           <Sidebar.Item
             icon={HiArrowSmRight}
             className="cursor-pointer"
