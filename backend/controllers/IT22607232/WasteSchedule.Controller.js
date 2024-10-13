@@ -1,86 +1,48 @@
 import WasteShedule from '../../models/IT22607232/WasteShedule.model.js';
 import nodemailer from 'nodemailer';
 import dotenv from "dotenv";
-import User from "../../models/user.model.js";
 import { errorHandler } from "../../utils/error.js";
+import RequestFactory from './RequestFactory.js';
 dotenv.config();
 
-
-// Send Email
-export const sendEmail = async (req, res, next) => {
-    /*try {*/
-      const { to, subject, text } = req.body;
-  
-      // Create a Nodemailer transporter
-      const transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 587,
-        secure: false,
-        auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS
-        }
-      });
-  
-      // Send mail with defined transport object
-      await transporter.sendMail({
-        from: process.env.EMAIL_USER,
-        to,
-        subject,
-        text
-      });
+const logAction = (action) => {
+  return async function (req, res, next) {
+    // console.log(`Action: ${action} | Timestamp: ${new Date().toISOString()}`);
+    return await action(req, res, next);
   };
+};
 
-
-// Create Waste Schedule
-export const createRequest = async (req, res, next) => {
-  try {
-    const {
-      Status,
-      Additional_Note,
-      email,
-      Location,
-      ScheduleDate,
-      Category,
-      CustomerName,
-      RequestID,
-      userId,
-    } = req.body;
-
-    // Check if userId matches the logged-in user's ID
-    if (userId !== req.user.id) {
-      return next(errorHandler(403, "You are not authorized to create this Request"));
-    }
-
-    // Additional validation can be added here (e.g., check required fields)
+const validateRequest = (action) => {
+  return async function (req, res, next) {
+    const { Status, CustomerName, ScheduleDate, Location, Category } = req.body;
     if (!Status || !CustomerName || !ScheduleDate || !Location || !Category) {
       return next(errorHandler(400, "Please fill in all required fields."));
     }
+    return await action(req, res, next);
+  };
+};
 
-    const newRequest = new WasteShedule({
-      Status,
-      Additional_Note,
-      email,
-      Location,
-      ScheduleDate,
-      Category,
-      CustomerName,
-      RequestID,
-      userId,
-    });
+export const createRequest = logAction(validateRequest(async (req, res, next) => {
+  try {
+    // Use the factory to create the request
+    const newRequest = RequestFactory.createRequest(req.body); 
+
+    // Check authorization
+    if (newRequest.userId !== req.user.id) {
+      return next(errorHandler(403, "You are not authorized to create this request"));
+    }
 
     await newRequest.save();
 
     // Send email notification
     const subject = `New Waste Request Created: ${newRequest.RequestID}`;
-    const text = `Dear ${newRequest.CustomerName},\n\nYour waste request has been created successfully.\n\nDetails:\n- Status: ${newRequest.Status}\n- Category: ${newRequest.Category}\n- Schedule Date: ${newRequest.ScheduleDate}\n- Location: ${newRequest.Location}\n- Additional Notes: ${newRequest.Additional_Note}\n\nThank you for using our service!
-    Green Trucker Waste Management`;
+    const text = `Dear ${newRequest.CustomerName},\n\nYour waste request has been created successfully.\n\nDetails:\n- Status: ${newRequest.Status}\n- Category: ${newRequest.Category}\n- Schedule Date: ${newRequest.ScheduleDate}\n- Location: ${newRequest.Location}\n- Additional Notes: ${newRequest.Additional_Note}\n\nThank you for using our service!\nGreen Truck Waste Management`;
 
     await sendEmail({
       body: { to: newRequest.email, subject, text }
     });
 
-    // Respond with the newly created request
+  
     res.status(201).json({
       success: true,
       message: "Request created successfully!",
@@ -91,13 +53,51 @@ export const createRequest = async (req, res, next) => {
     console.error("Error creating request:", error.message || error);
     next(error);
   }
+}));
+
+// Update Schedule by Resident (logged-in user)
+export const updateSchedule = async (req, res, next) => {
+  try {
+    const requestId = req.params.requestid;
+    const updateRequestData = req.body;
+
+    const updatedRequest = await WasteShedule.findOneAndUpdate(
+      { _id: requestId, userRef: req.user._id }, 
+      updateRequestData,
+      { new: true }
+    );
+
+    if (!updatedRequest) {
+      return res.status(404).json({ message: 'Schedule not found or you are not authorized to update this' });
+    }
+
+    res.status(200).json({ message: 'Successfully updated the schedule', updatedRequest });
+  } catch (error) {
+    console.error('Error updating scheduling:', error);
+    next(error);
+  }
+};
+
+
+// Delete Schedule by Resident (logged-in user)
+export const deleteSchedule = async (req, res, next) => {
+  try {
+    const deletedRequest = await WasteShedule.findOneAndDelete({ _id: req.params.requestid, userRef: req.user._id }); 
+
+    if (!deletedRequest) {
+      return res.status(404).json({ message: 'Schedule not found or you are not authorized to delete this' });
+    }
+
+    res.status(200).json({ message: 'Successfully deleted the waste collection request' });
+  } catch (error) {
+    return res.status(500).json({ msg: error.message });
+  }
 };
 
 
 
 
-
-// Get all waste requests for a specific resource
+//  Get all waste requests for a specific resource
 export const getWasteRequests = async (req, res, next) => {
   try {
      const wasteRequests = await WasteShedule.find({ resourceId: req.params.resourceId }).sort({ createdAt: -1 });
@@ -159,40 +159,45 @@ export const oneSchedule = async (req, res, next) => {
   }
 };
 
-// Update Schedule by Resident (logged-in user)
-export const updateSchedule = async (req, res, next) => {
-  try {
-    const requestId = req.params.requestid;
-    const updateRequestData = req.body;
 
-    const updatedRequest = await WasteShedule.findOneAndUpdate(
-      { _id: requestId, userRef: req.user._id }, 
-      updateRequestData,
-      { new: true }
-    );
+// Send Email
+export const sendEmail = async (req, res, next) => {
+    /*try {*/
+      const { to, subject, text } = req.body;
+  
+      // Create a Nodemailer transporter
+      const transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false,
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS
+        }
+      });
+  
+      // Send mail with defined transport object
+      await transporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to,
+        subject,
+        text
+      });
+  };
 
-    if (!updatedRequest) {
-      return res.status(404).json({ message: 'Schedule not found or you are not authorized to update this' });
-    }
 
-    res.status(200).json({ message: 'Successfully updated the schedule', updatedRequest });
-  } catch (error) {
-    console.error('Error updating scheduling:', error);
-    next(error);
-  }
-};
 
-// Delete Schedule by Resident (logged-in user)
-export const deleteSchedule = async (req, res, next) => {
-  try {
-    const deletedRequest = await WasteShedule.findOneAndDelete({ _id: req.params.requestid, userRef: req.user._id }); 
 
-    if (!deletedRequest) {
-      return res.status(404).json({ message: 'Schedule not found or you are not authorized to delete this' });
-    }
 
-    res.status(200).json({ message: 'Successfully deleted the waste collection request' });
-  } catch (error) {
-    return res.status(500).json({ msg: error.message });
-  }
-};
+
+
+
+
+
+
+
+
+
+
+
+
