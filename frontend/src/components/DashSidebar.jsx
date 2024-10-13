@@ -1,6 +1,6 @@
 import { Sidebar } from "flowbite-react";
 import { useEffect, useState } from "react";
-import { HiArrowSmRight, HiUser } from "react-icons/hi";
+import { HiArrowSmRight, HiTrash, HiTruck, HiUser } from "react-icons/hi";
 import { useDispatch } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import { signOutSuccess } from "../redux/user/userSlice";
@@ -103,6 +103,17 @@ export default function DashSidebar() {
                 </Sidebar.Item>
               </Link>
 
+{currentUser.WasteAuthorityAdmin && (
+          <Link to="/all-requests">
+            <Sidebar.Item
+              active={tab === "View waste-schedules"}
+              icon={HiTruck}
+              as="div"
+            >
+              Schedule Waste
+            </Sidebar.Item>
+          </Link>
+          )}
           <Sidebar.Item
             icon={HiArrowSmRight}
             className="cursor-pointer"
