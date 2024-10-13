@@ -2,7 +2,13 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import DashSidebar from "../components/DashSidebar";
 import DashProfile from "../components/DashProfile";
+import DashPricing from "../components/IT22003546_Component/PricingTable";
+import DashBill from "../components/IT22003546_Component/BillView";
 import DashInventory from "../components/IT22577160/DashInventory";
+import WasteCollectionList from "../components/IT22350114/WasteCollectionList"
+import DashWasteSchedule from "../components/IT22607232/DashWasteSchedule";
+
+
 
 export default function Dashboard() {
   const location = useLocation();
@@ -22,8 +28,19 @@ export default function Dashboard() {
       </div>
       {/* profile */}
       {tab === "profile" && <DashProfile />}
+      {/* pricing list */}
+      {tab === "pricing-list" && <DashPricing />}
+      {/* pricing list */}
+      {tab === "bill-view" && <DashBill />}
       {/* Inventory */}
       {tab === "inventory" && <DashInventory />}
+      {/* Inventory */}
+      {tab === "waste-collection" && <WasteCollectionList />}
+      {/* Schedule Waste */}
+      {tab === "waste-schedule" && <DashWasteSchedule />}
+
+
     </div>
+    
   )
 }
