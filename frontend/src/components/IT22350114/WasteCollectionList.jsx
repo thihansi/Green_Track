@@ -100,62 +100,64 @@ const WasteCollectionList = () => {
   };
 
   if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (error) return <Alert color="failure">{error}</Alert>;
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-4">Your Waste Collections</h2>
-      <table className="min-w-full">
-        <thead>
-          <tr>
-            <th className="border px-4 py-2">Collection ID</th>
-            <th className="border px-4 py-2">Collection Date</th>
-            <th className="border px-4 py-2">Status</th>
-            <th className="border px-4 py-2">Garbage Items</th>
-            <th className="border px-4 py-2">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {wasteCollections.map((collection) => (
-            <tr key={collection.collectionId}>
-              <td className="border px-4 py-2">{collection.collectionId}</td>
-              <td className="border px-4 py-2">
-                {new Date(collection.collectionDate).toLocaleDateString()}
-              </td>
-              <td className="border px-4 py-2">
-                <Select
-                  value={collection.status}
-                  onChange={(e) => handleStatusChange(collection, e.target.value)}
-                >
-                  <option value="Scheduled">Scheduled</option>
-                  <option value="Collected">Collected</option>
-                  <option value="Cancelled">Cancelled</option>
-                </Select>
-              </td>
-              <td className="border px-4 py-2">
-                <ul>
-                  {collection.garbage.map((item, index) => (
-                    <li key={index}>
-                      {item.weight} kg of {item.category}
-                    </li>
-                  ))}
-                </ul>
-              </td>
-              <td className="border px-4 py-2">
-                <Button onClick={() => handleUpdate(collection)} color="info">
-                  Update
-                </Button>
-                <Button
-                  onClick={() => handleDelete(collection._id)}
-                  color="failure"
-                >
-                  Delete
-                </Button>
-              </td>
+    <div className="container mx-auto p-6">
+      <h2 className="text-3xl font-bold mb-6 text-center">Waste Collections</h2>
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-white shadow-lg rounded-lg">
+          <thead className="bg-gray-800 text-white">
+            <tr>
+              <th className="border px-4 py-2">Collection ID</th>
+              <th className="border px-4 py-2">Collection Date</th>
+              <th className="border px-4 py-2">Status</th>
+              <th className="border px-4 py-2">Garbage Items</th>
+              <th className="border px-4 py-2">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {wasteCollections.map((collection) => (
+              <tr key={collection.collectionId} className="hover:bg-gray-100">
+                <td className="border px-4 py-2">{collection.collectionId}</td>
+                <td className="border px-4 py-2">
+                  {new Date(collection.collectionDate).toLocaleDateString()}
+                </td>
+                <td className="border px-4 py-2">
+                  <Select
+                    value={collection.status}
+                    onChange={(e) => handleStatusChange(collection, e.target.value)}
+                  >
+                    <option value="Scheduled">Scheduled</option>
+                    <option value="Collected">Collected</option>
+                    <option value="Cancelled">Cancelled</option>
+                  </Select>
+                </td>
+                <td className="border px-4 py-2">
+                  <ul>
+                    {collection.garbage.map((item, index) => (
+                      <li key={index}>
+                        {item.weight} kg of {item.category}
+                      </li>
+                    ))}
+                  </ul>
+                </td>
+                <td className="border px-4 py-2">
+                  <Button onClick={() => handleUpdate(collection)} color="info">
+                    Update
+                  </Button>
+                  <Button
+                    onClick={() => handleDelete(collection._id)}
+                    color="failure"
+                  >
+                    Delete
+                  </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
