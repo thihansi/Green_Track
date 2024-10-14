@@ -49,8 +49,9 @@ const SummaryWidget = ({ totalWaste, totalRecyclable, totalNonRecyclable, yearly
         </div>
       </div>
       {/* Yearly Summary Section */}
+
       <div className="mt-4 border-t border-gray-200 pt-4 text-white"> {/* Change text color to white */}
-        <h3 className="text-lg font-semibold">Yearly Summary</h3>
+        {/* <h3 className="text-lg font-semibold">Yearly Summary</h3>
         <div className="flex justify-between">
           <span className="text-lg">Yearly Recyclable Waste:</span>
           <span className="text-lg">{yearlyRecyclable} kg</span>
@@ -58,8 +59,9 @@ const SummaryWidget = ({ totalWaste, totalRecyclable, totalNonRecyclable, yearly
         <div className="flex justify-between">
           <span className="text-lg">Yearly Non-Recyclable Waste:</span>
           <span className="text-lg">{yearlyNonRecyclable} kg</span>
-        </div>
+        </div> */}
       </div>
+      
     </Card>
   );
 };
