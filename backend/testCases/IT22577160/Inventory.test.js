@@ -19,18 +19,18 @@ describe("Create Equipment to Inventory bulk ", () => {
       Inventory.mockImplementation(() => ({
         save: vi.fn().mockResolvedValue({
           userId: "12345",
-          itemName: "John Doe",
-          category: "Pending",
+          itemName: "Shredder",
+          category: "WasteBin",
           image:
             "https://image.made-in-china.com/2f0j00RoUzLfprRcql/120L-Wheelie-Garbage-Bin-Rubbish-Container-Waste-Pedal-Trash-Can-Plastic-Dustbin.webp",
-          quantity: "123 Street",
-          condition: "2024-10-10",
-          description: "Plastic",
-          location: "Please pick up after 5 PM.",
-          type: "123",
-          offer: "66fc503f39be3b9ed09364e3",
-          regularPrice: "12345",
-          discountPrice: "66fc503f39be3b9ed09364e3",
+          quantity: 2,
+          condition: "good",
+          description: "Made with Plastic",
+          location: "123 Street",
+          type: "Recycle",
+          offer: "true",
+          regularPrice: 1000,
+          discountPrice: 50,
           slug: "12345",
         }),
       }));
@@ -49,18 +49,18 @@ describe("Create Equipment to Inventory bulk ", () => {
         .set("Authorization", `Bearer ${token}`)
         .send({
           userId: "12345",
-          itemName: "John Doe",
-          category: "Pending",
+          itemName: "Shredder",
+          category: "WasteBin",
           image:
             "https://image.made-in-china.com/2f0j00RoUzLfprRcql/120L-Wheelie-Garbage-Bin-Rubbish-Container-Waste-Pedal-Trash-Can-Plastic-Dustbin.webp",
-          quantity: "123 Street",
-          condition: "2024-10-10",
-          description: "Plastic",
-          location: "Please pick up after 5 PM.",
-          type: "123",
-          offer: "66fc503f39be3b9ed09364e3",
-          regularPrice: "12345",
-          discountPrice: "66fc503f39be3b9ed09364e3",
+          quantity: 3,
+          condition: "good",
+          description: "Made with Plastic",
+          location: "123 Street",
+          type: "Recycle",
+          offer: "true",
+          regularPrice: 2500,
+          discountPrice: 500,
           slug: "12345",
         });
 
@@ -73,13 +73,14 @@ describe("Create Equipment to Inventory bulk ", () => {
     }
   });
 
+  // negative test case for create equipment
   app.post("/api/inventory/create", (req, res) => {
     console.log("Route Hit: /api/inventory/create");
     it("should return 400 error for missing required fields", async () => {
       const res = await request(app).post("/api/inventory/create").send({
         userId: "12345",
-        itemName: "John Doe",
-        category: "Pending",
+        itemName: "Shredder",
+        category: "WasteBin",
         image:
           "https://image.made-in-china.com/2f0j00RoUzLfprRcql/120L-Wheelie-Garbage-Bin-Rubbish-Container-Waste-Pedal-Trash-Can-Plastic-Dustbin.webp",
         quantity: "123 Street",
@@ -107,18 +108,18 @@ describe("Create Equipment to Inventory bulk ", () => {
         // Mocking the findOneAndDelete function of Inventory
         Inventory.findOneAndDelete.mockResolvedValue({
           userId: "12345",
-          itemName: "John Doe",
-          category: "Pending",
+          itemName: "Shredder",
+          category: "WasteBin",
           image:
             "https://image.made-in-china.com/2f0j00RoUzLfprRcql/120L-Wheelie-Garbage-Bin-Rubbish-Container-Waste-Pedal-Trash-Can-Plastic-Dustbin.webp",
-          quantity: "123 Street",
-          condition: "2024-10-10",
-          description: "Plastic",
-          location: "Please pick up after 5 PM.",
-          type: "123",
-          offer: "66fc503f39be3b9ed09364e3",
-          regularPrice: "12345",
-          discountPrice: "66fc503f39be3b9ed09364e3",
+          quantity: 5,
+          condition: "good",
+          description: "made with Plastic",
+          location: "123 Street",
+          type: "Recycle",
+          offer: "true",
+          regularPrice: 1000,
+          discountPrice: 400,
           slug: "12345",
         });
 
@@ -128,7 +129,7 @@ describe("Create Equipment to Inventory bulk ", () => {
           process.env.JWT_SECRET
         );
 
-        // Send a DELETE request to your deleteSchedule route
+        // Send a DELETE request
         const response = await request(app)
           .delete("/api/inventory/deleteInventoryItems/12345/4521")
           .set("Authorization", `Bearer ${token}`); // Set the token for auth
@@ -143,7 +144,7 @@ describe("Create Equipment to Inventory bulk ", () => {
       }
     });
 
-    // Test case for when the Equipment is not found or the user is unauthorized
+    // negative test case for delete equipment
     it("should return 404 if equipment is not found or user not authorized", async () => {
       try {
         // Mocking the findOneAndDelete function to return null (not found)
@@ -188,33 +189,33 @@ describe("Create Equipment to Inventory bulk ", () => {
           {
             userId: "12345",
             itemName: "Shredder",
-            category: "Pending",
+            category: "WasteBin",
             image:
               "https://image.made-in-china.com/2f0j00RoUzLfprRcql/120L-Wheelie-Garbage-Bin-Rubbish-Container-Waste-Pedal-Trash-Can-Plastic-Dustbin.webp",
-            quantity: "123 Street",
-            condition: "2024-10-10",
-            description: "Plastic",
-            location: "Please pick up after 5 PM.",
-            type: "123",
-            offer: "66fc503f39be3b9ed09364e3",
-            regularPrice: "12345",
-            discountPrice: "66fc503f39be3b9ed09364e3",
+            quantity: 5,
+            condition: "GOOD",
+            description: "Made with Plastic",
+            location: "123 Street",
+            type: "wastebin",
+            offer: "true",
+            regularPrice: 4500,
+            discountPrice: 400,
             slug: "12345",
           },
           {
             userId: "12345",
             itemName: "Shredder",
-            category: "Pending",
+            category: "wastebin",
             image:
               "https://image.made-in-china.com/2f0j00RoUzLfprRcql/120L-Wheelie-Garbage-Bin-Rubbish-Container-Waste-Pedal-Trash-Can-Plastic-Dustbin.webp",
-            quantity: "123 Street",
-            condition: "2024-10-10",
-            description: "Plastic",
-            location: "Please pick up after 5 PM.",
-            type: "123",
-            offer: "66fc503f39be3b9ed09364e3",
-            regularPrice: "12345",
-            discountPrice: "66fc503f39be3b9ed09364e3",
+            quantity: 4,
+            condition: "good",
+            description: "Made with Plastic",
+            location: "123 Street",
+            type: "Good",
+            offer: "true",
+            regularPrice: 800,
+            discountPrice: 200,
             slug: "12345",
           },
         ]);
@@ -225,7 +226,7 @@ describe("Create Equipment to Inventory bulk ", () => {
           process.env.JWT_SECRET
         );
 
-        // Send a GET request to your equipments route
+        // Send a GET request to getInventoryItems route
         const response = await request(app)
           .get("/api/inventory/getInventoryItems")
           .set("Authorization", `Bearer ${token}`)
@@ -243,6 +244,7 @@ describe("Create Equipment to Inventory bulk ", () => {
     });
 
     // Test case for handling internal server errors
+    // negative test case for get all inventory
     it("should return a 500 status if there is a server error", async () => {
       try {
         // Mocking the WasteShedule.find to throw an error
@@ -269,32 +271,9 @@ describe("Create Equipment to Inventory bulk ", () => {
     });
   });
 
-  // Test case for no inventory found
-  it("should return a 404 error if no equipments are found for the user", async () => {
-    try {
-      // Mocking Inventory.find to return an empty array (no equipments found)
-      Inventory.find.mockResolvedValue([]);
+ 
 
-      // Generate a JWT token for the authorized user
-      const token = jwt.sign(
-        { id: "66fc503f39be3b9ed09364e3" },
-        process.env.JWT_SECRET
-      );
-
-      // Send a GET request to the getInventoryItems route
-      const response = await request(app)
-        .get("/api/inventory/getInventoryItems/66fc503f39be3b9ed09364e3")
-        .set("Authorization", `Bearer ${token}`);
-
-      // Assertions
-      expect(response.statusCode).toBe(404); // Not found status
-      expect(response.body).toHaveProperty("message", "No Equipments found");
-    } catch (error) {
-      console.error("Test failed with error:", error);
-    }
-  });
-
-  // Negative test case for no inventory items found
+  // Negative test case for get all inventory
   it("should return a 404 error if no inventory items are found for the user", async () => {
     try {
       // Mocking Inventory.find to return an empty array (no inventory items found)
@@ -340,17 +319,17 @@ describe("Create Equipment to Inventory bulk ", () => {
         Inventory.findOneAndUpdate.mockResolvedValue({
           userId: "12345",
           itemName: "Shredder",
-          category: "Pending",
+          category: "wastebin",
           image:
             "https://image.made-in-china.com/2f0j00RoUzLfprRcql/120L-Wheelie-Garbage-Bin-Rubbish-Container-Waste-Pedal-Trash-Can-Plastic-Dustbin.webp",
-          quantity: "123 Street",
-          condition: "2024-10-10",
-          description: "Plastic",
-          location: "Please pick up after 5 PM.",
-          type: "123",
-          offer: "66fc503f39be3b9ed09364e3",
-          regularPrice: "12345",
-          discountPrice: "66fc503f39be3b9ed09364e3",
+          quantity: 4,
+          condition: "good",
+          description: "Made with Plastic",
+          location: "123 Street",
+          type: "good",
+          offer: "true",
+          regularPrice: 800,
+          discountPrice: 150,
           slug: "12345",
         });
 
@@ -367,11 +346,11 @@ describe("Create Equipment to Inventory bulk ", () => {
           .send({
             userId: "12345",
             itemName: "Shredder",
-            category: "Pending",
+            category: "wastebin",
             image:
               "https://image.made-in-china.com/2f0j00RoUzLfprRcql/120L-Wheelie-Garbage-Bin-Rubbish-Container-Waste-Pedal-Trash-Can-Plastic-Dustbin.webp",
-            quantity: "123 Street",
-            condition: "2024-10-10",
+            quantity: 4,
+            condition: "good",
           });
 
         // Assertions
@@ -398,11 +377,11 @@ describe("Create Equipment to Inventory bulk ", () => {
 
         // Send a PUT request with a different userId
         const response = await request(app)
-          .put("/api/wasteSchedule/updateschedule/req1")
+          .put("/api/inventory/updateInventoryItems/124/896")
           .set("Authorization", `Bearer ${token}`)
           .send({
             Location: "456 Street",
-            ScheduleDate: "2024-10-15",
+            itemName: "Shredder",
             Category: "Glass",
           });
 
@@ -417,7 +396,7 @@ describe("Create Equipment to Inventory bulk ", () => {
       }
     });
 
-    // Test case for Inventory not found
+    // Negative test case for updating inventory
     it("should return a 404 error if the Equipments is not found", async () => {
       try {
         // Mock Inventory.findOneAndUpdate to return null
@@ -431,11 +410,11 @@ describe("Create Equipment to Inventory bulk ", () => {
 
         // Send a PUT request to the updateInventory route
         const response = await request(app)
-          .put("/api/wasteSchedule/updateschedule/req123")
+          .put("/api/inventory/updateInventoryItems/124/896")
           .set("Authorization", `Bearer ${token}`)
           .send({
             Location: "456 Street",
-            ScheduleDate: "2024-10-15",
+            itemName: "Shredder",
             Category: "Glass",
           });
 
@@ -450,4 +429,4 @@ describe("Create Equipment to Inventory bulk ", () => {
       }
     });
   });
-});
+})

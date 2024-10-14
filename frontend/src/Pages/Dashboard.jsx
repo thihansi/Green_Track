@@ -6,8 +6,6 @@ import DashPricing from "../components/IT22003546/PricingTable";
 import DashBill from "../components/IT22003546/BillView";
 import DashInventory from "../components/IT22577160/DashInventory";
 import WasteCollectionList from "../components/IT22350114/WasteCollectionList"
-import DashWasteSchedule from "../components/IT22607232/DashWasteSchedule";
-
 
 
 export default function Dashboard() {
@@ -36,10 +34,6 @@ export default function Dashboard() {
       {tab === "inventory" && <DashInventory />}
       {/* Inventory */}
       {tab === "waste-collection" && <WasteCollectionList />}
-      {/* Schedule Waste */}
-      {tab === "waste-schedule" && <DashWasteSchedule />}
-
-
     </div>
     
   )
