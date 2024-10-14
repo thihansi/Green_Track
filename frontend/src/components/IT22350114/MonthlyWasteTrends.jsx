@@ -9,20 +9,21 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts'; // Ensure to install this library
+import "./ChartStyles.css";
 
 const MonthlyWasteTrends = ({ data }) => {
   return (
-    <div className="p-4 shadow-md">
-      <h2 className="text-xl font-bold mb-4">Monthly Waste Trends</h2>
+    <div className="monthly-waste-trends p-4 shadow-md rounded-lg">
+      <h2 className="text-xl font-bold mb-4 text-white">Monthly Waste Trends</h2>
       <ResponsiveContainer width="100%" height={300}>
         <BarChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="month" />
-          <YAxis />
+          <CartesianGrid strokeDasharray="3 3" stroke="#ffffff" />
+          <XAxis dataKey="month" stroke="#ffffff" />
+          <YAxis stroke="#ffffff" />
           <Tooltip />
           <Legend />
-          <Bar dataKey="recyclable" fill="#4caf50" />
-          <Bar dataKey="nonRecyclable" fill="#f44336" />
+          <Bar dataKey="recyclable" fill="#a3e635" />
+          <Bar dataKey="nonRecyclable" fill="#ec4899" />
         </BarChart>
       </ResponsiveContainer>
     </div>

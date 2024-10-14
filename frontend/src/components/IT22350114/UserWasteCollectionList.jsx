@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { Card, Alert, Select } from "flowbite-react";
 import SummaryWidget from "./SummaryWidget"; // Adjust the path as necessary
 import MonthlyWasteTrends from "./MonthlyWasteTrends"; // Adjust the path as necessary
+import YearlySummaryWidget from "./YearlySummaryWidget";
 
 const UserWasteCollectionList = () => {
   const { currentUser } = useSelector((state) => state.user);
@@ -140,6 +141,14 @@ const UserWasteCollectionList = () => {
         </div>
       </div>
 
+      {/* Yearly Summary Section */}
+      <div className="mb-4">
+        <YearlySummaryWidget 
+          yearlyRecyclable={yearlyTotals.totalRecyclable}
+          yearlyNonRecyclable={yearlyTotals.totalNonRecyclable}
+        />
+      </div>
+
       {/* Monthly Summary Section */}
       <div className="mb-4">
         <h3 className="text-xl font-semibold">Monthly Summary</h3>
@@ -170,6 +179,8 @@ const UserWasteCollectionList = () => {
           </p>
         </div>
       </div>
+
+       
 
       {/* Waste Collection Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
