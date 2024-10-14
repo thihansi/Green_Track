@@ -80,7 +80,7 @@ const ScheduleRequest = () => {
         toast.success("Waste Collection Request Placed successfully! Email sent");
 
         // Reset form or navigate back
-        navigate("/dashboard?tab=waste-schedule");
+        navigate("/waste-schedule");
       } else {
         // Handle specific error status codes for better user feedback
         if (res.status === 400) {

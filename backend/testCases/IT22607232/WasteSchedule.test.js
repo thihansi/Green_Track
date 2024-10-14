@@ -164,7 +164,7 @@ describe("Create Waste Schedule Request", () => {
     });
 
     // Test case for successfully fetching waste requests
-    it("should get all waste requests for the specified resource", async () => {
+    it("should get all waste requests for the specified user Id", async () => {
       try {
         // Mocking the WasteShedule.find function
         WasteShedule.find.mockResolvedValue([
