@@ -23,7 +23,9 @@ const RequestTable = () => {
   const handleShowRequests = async () => {
     try {
       // Ensure to fetch requests for the logged-in user by passing the user ID
-      const res = await fetch(`/api/wasteSchedule/get-specific-requests/${currentUser._id}`);
+      const res = await fetch(
+        `/api/wasteSchedule/get-specific-requests/${currentUser._id}`
+      );
       const data = await res.json();
 
       if (!res.ok || data.success === false) {
@@ -60,21 +62,18 @@ const RequestTable = () => {
     }
   };
 
+  // Function to download report as PDF
   const handleDownloadReport = () => {
-    const doc = new jsPDF({
-      orientation: "landscape", 
-    });
-    
+    const doc = new jsPDF();
     const tableColumn = [
-      "Date", 
-      "RequestID", 
-      "CustomerName", 
-      "Category", 
-      "ScheduleDate", 
-      "Location", 
-      "Status"
+      "Date Updated",
+      "RequestID",
+      "CustomerName",
+      "Category",
+      "ScheduleDate",
+      "Location",
+      "Status",
     ];
-  
     const tableRows = showRequests.map((request) => [
       new Date(request.updatedAt).toLocaleDateString(),
       request.RequestID,
@@ -82,67 +81,48 @@ const RequestTable = () => {
       request.Category,
       request.ScheduleDate,
       request.Location,
-      request.Status
+      request.Status,
     ]);
-  
+
     // Set the styling for the PDF
-    doc.setFontSize(10);
-    doc.text(" Waste Collection Requests", 14, 22);
-    
-    // Calculate the width of the table
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const columnWidths = [25, 20, 40, 30, 30, 30, 25]; // widths of each column
-    const totalTableWidth = columnWidths.reduce((acc, width) => acc + width, 0) + (tableColumn.length - 1) * 5; // Adding padding between columns
-    
-    // Calculate the left margin to center the table
-    const leftMargin = (pageWidth - totalTableWidth) / 2;
-  
+    doc.setFontSize(12);
+    doc.text("My Waste Collection Requests\nGreen Track Waste Management System Pvt Ltd", 14, 22);
+
+    // Add the autoTable with styles
     doc.autoTable({
       head: [tableColumn],
       body: tableRows,
       styles: {
-        fillColor: [255, 255, 255],
+        fillColor: [255, 239, 219],
         textColor: [0, 0, 0],
-        fontSize: 8,
-        cellPadding: 5,
-        overflow: 'linebreak', 
-        cellWidth: 'auto',
+        fontSize: 10,
       },
       headStyles: {
         fillColor: [22, 160, 133],
         textColor: [255, 255, 255],
-        fontStyle: 'bold',
-        cellPadding: 5,
+        fontStyle: "bold",
       },
-      margin: { top: 30, left: leftMargin }, 
-      theme: 'grid',
-      columnStyles: {
-        0: { cellWidth: 25 },  // Date
-        1: { cellWidth: 20 },  // RequestID
-        2: { cellWidth: 40 },  // CustomerName
-        3: { cellWidth: 30 },  // Category
-        4: { cellWidth: 30 },  // ScheduleDate
-        5: { cellWidth: 30 },  // Location
-        6: { cellWidth: 25 },  // Status
-      },
-      // Enable page breaking for long tables
-      pageBreak: 'auto', 
+      margin: { top: 30 },
+      theme: "grid",
     });
-  
+
     // Save the PDF
     doc.save("MyWasteCollectionRequests_report.pdf");
   };
-  
 
   return (
     <div className="w-full overflow-x-auto md:mx-auto p-5">
       <h1 className="text-2xl text-center font-bold text-teal-600 dark:text-lime-400 mb-5">
         🚛Green Track Waste Management System Pvt Ltd🚛
-        <br /><br />
+        <br />
+        <br />
         <p>🚮🗑️My Waste Collection Requests 🗑️🚮</p>
       </h1>
 
-      <Table hoverable className="shadow-lg border border-gray-300 dark:border-gray-600 rounded-lg">
+      <Table
+        hoverable
+        className="shadow-lg border border-gray-300 dark:border-gray-600 rounded-lg"
+      >
         <Table.Head className="bg-teal-500 text-black dark:white dark:bg-lime-600 rounded-t-lg">
           <Table.HeadCell>Date</Table.HeadCell>
           <Table.HeadCell>RequestID</Table.HeadCell>
@@ -163,15 +143,33 @@ const RequestTable = () => {
                 key={request._id}
                 className="bg-white dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 transition-shadow duration-300 shadow-sm dark:shadow-gray-900"
               >
-                <Table.Cell className="p-3 border-r">{new Date(request.updatedAt).toLocaleDateString()}</Table.Cell>
-                <Table.Cell className="p-3 border-r">{request.RequestID}</Table.Cell>
-                <Table.Cell className="p-3 border-r">{request.CustomerName}</Table.Cell>
-                <Table.Cell className="p-3 border-r">{request.Category}</Table.Cell>
-                <Table.Cell className="p-3 border-r">{request.ScheduleDate}</Table.Cell>
-                <Table.Cell className="p-3 border-r">{request.Location}</Table.Cell>
-                <Table.Cell className="p-3 border-r">{request.email}</Table.Cell>
-                <Table.Cell className="p-3 border-r">{request.Additional_Note}</Table.Cell>
-                <Table.Cell className="p-3 border-r">{request.Status}</Table.Cell>
+                <Table.Cell className="p-3 border-r">
+                  {new Date(request.updatedAt).toLocaleDateString()}
+                </Table.Cell>
+                <Table.Cell className="p-3 border-r">
+                  {request.RequestID}
+                </Table.Cell>
+                <Table.Cell className="p-3 border-r">
+                  {request.CustomerName}
+                </Table.Cell>
+                <Table.Cell className="p-3 border-r">
+                  {request.Category}
+                </Table.Cell>
+                <Table.Cell className="p-3 border-r">
+                  {request.ScheduleDate}
+                </Table.Cell>
+                <Table.Cell className="p-3 border-r">
+                  {request.Location}
+                </Table.Cell>
+                <Table.Cell className="p-3 border-r">
+                  {request.email}
+                </Table.Cell>
+                <Table.Cell className="p-3 border-r">
+                  {request.Additional_Note}
+                </Table.Cell>
+                <Table.Cell className="p-3 border-r">
+                  {request.Status}
+                </Table.Cell>
                 <Table.Cell className="p-3 text-red-600 cursor-pointer">
                   <span
                     onClick={() => {
@@ -215,7 +213,9 @@ const RequestTable = () => {
         <Modal.Body>
           <div className="text-center">
             <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 mb-4 mx-auto" />
-            <h3 className="mb-5 text-lg">Are you sure you want to delete this request?</h3>
+            <h3 className="mb-5 text-lg">
+              Are you sure you want to delete this request?
+            </h3>
             <div className="flex justify-center gap-4">
               <Button color="failure" onClick={handleRequestsDelete}>
                 Yes, I'm sure

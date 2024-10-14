@@ -100,7 +100,7 @@ const UpdateSchedules = () => {
         setError(data.message);
       }
       //navigate(`/task-assign/${data._id}`);
-      navigate("/dashboard?tab=waste-schedule");
+      navigate("/waste-schedule");
     } catch (error) {
       setError(error.message);
       setLoading(false);
