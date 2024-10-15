@@ -4,7 +4,7 @@ import { errorHandler } from "../../utils/error.js";
 
 
 // Create a new comment
-export const createComment = async (req, res) => {
+export const createComment = async (req, res, next) => {
    try {
       const { content, resourceId, userId } = req.body;
       if(userId !== req.user.id) {

@@ -9,3 +9,10 @@ body {
 .homeText {
    text-shadow: 2px 2px 1px #d3afe7;
 }
+
+.style {
+   background: linear-gradient(to right, #21fec3, #79e555);
+   background-clip: text;
+   -webkit-background-clip: text;
+   color: transparent;
+ }
