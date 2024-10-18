@@ -129,15 +129,15 @@ const PricingTable = () => {
                     <Table>
                         <Table.Head>
                             <Table.HeadCell>Item</Table.HeadCell>
-                            <Table.HeadCell>Price per Unit</Table.HeadCell>
+                            <Table.HeadCell className="text-center w-full">Price per Unit</Table.HeadCell>
                             <Table.HeadCell>Actions</Table.HeadCell>
                         </Table.Head>
                         <Table.Body>
                             {pricingData.map((item) => (
                                 <Table.Row key={item._id} className="hover:bg-gray-100 transition duration-200">
                                     <Table.Cell>{item.item}</Table.Cell>
-                                    <Table.Cell className="text-right">
-                                        <span className="font-semibold">${item.pricePerUnit.toFixed(2)}</span>
+                                    <Table.Cell className="text-center w-full">
+                                        <span className="font-semibold">LKR {item.pricePerUnit.toFixed(2)}</span>
                                     </Table.Cell>
                                     <Table.Cell className="flex space-x-2">
                                         <Button onClick={() => handleEdit(item)} color="blue">Edit</Button>

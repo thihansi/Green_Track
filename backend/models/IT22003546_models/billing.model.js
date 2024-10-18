@@ -4,11 +4,11 @@ const billingSchema = new mongoose.Schema({
     billingId: {
         type: String,
         required: true,
-        unique: true
+        unique: true // generating in the frontend
     },
     residentId: {
         type: String,
-        required: true
+        required: true // fetching from parameter
     },
     garbageCost: {
         type: Number,
@@ -31,7 +31,8 @@ const billingSchema = new mongoose.Schema({
     },
     paymentStatus: {
         type: String,
-        required: true
+        required: true,
+        enum: ['Paid', 'Unpaid', 'Pending'] // Adding an enum (only these values are allowed)
     }
 });
 
