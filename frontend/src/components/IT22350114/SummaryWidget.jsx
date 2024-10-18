@@ -7,8 +7,8 @@ const SummaryWidget = ({ totalWaste, totalRecyclable, totalNonRecyclable, yearly
   const [hovered, setHovered] = useState(null);
 
   const data = [
-    { title: 'Recyclable Waste', value: totalRecyclable, color: '#4caf50' }, // Green
-    { title: 'Non-Recyclable Waste', value: totalNonRecyclable, color: '#f44336' }, // Red
+    { title: 'Recyclable Waste', value: totalRecyclable, color: '#84cc16' }, // Green
+    { title: 'Non-Recyclable Waste', value: totalNonRecyclable, color: '#f97316' }, // Red
   ];
 
   return (
