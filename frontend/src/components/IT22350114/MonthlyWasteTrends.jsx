@@ -22,8 +22,8 @@ const MonthlyWasteTrends = ({ data }) => {
           <YAxis stroke="#ffffff" />
           <Tooltip />
           <Legend />
-          <Bar dataKey="recyclable" fill="#a3e635" />
-          <Bar dataKey="nonRecyclable" fill="#ec4899" />
+          <Bar dataKey="recyclable" fill="#84cc16" />
+          <Bar dataKey="nonRecyclable" fill="#f97316" />
         </BarChart>
       </ResponsiveContainer>
     </div>

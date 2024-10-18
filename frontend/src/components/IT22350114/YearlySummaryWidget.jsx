@@ -5,7 +5,7 @@ import "./ChartStyles.css";
 
 const YearlySummaryWidget = ({ yearlyRecyclable, yearlyNonRecyclable }) => {
   const data = [
-    { title: 'Recyclable Waste', value: yearlyRecyclable, color: '#fde047' }, // yellow
+    { title: 'Recyclable Waste', value: yearlyRecyclable, color: '#84cc16' }, // yellow
     { title: 'Non-Recyclable Waste', value: yearlyNonRecyclable, color: '#f97316' }, // orange
   ];
 
