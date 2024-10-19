@@ -87,6 +87,26 @@ describe("WasteSchedule Controller Unit Tests", () => {
     });
   });
 
+
+   // Test case for Get Waste Schedule Requests
+   describe("Get Waste Schedule Requests", () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+    // Test 6: Get User Waste Requests - Unauthorized Access
+    it("should return an error if the logged-in user tries to access another user’s requests", async () => {
+      const req = { params: { userId: "user2" }, user: { id: "user1" } };
+      const res = {};
+      const next = vi.fn();
+
+      await getUserWasteRequests(req, res, next);
+
+      expect(next).toHaveBeenCalledWith(
+        errorHandler(403, "You are not authorized to view these waste requests")
+      );
+    });
+  });
+
   // Test case for Update Waste Schedule Request
   describe("Update Waste Schedule Request", () => {
     beforeEach(() => {
@@ -158,22 +178,6 @@ describe("WasteSchedule Controller Unit Tests", () => {
     });
   });
 
-  // Test case for Get Waste Schedule Requests
-  describe("Get Waste Schedule Requests", () => {
-    beforeEach(() => {
-      vi.clearAllMocks();
-    });
-    // Test 6: Get User Waste Requests - Unauthorized Access
-    it("should return an error if the logged-in user tries to access another user’s requests", async () => {
-      const req = { params: { userId: "user2" }, user: { id: "user1" } };
-      const res = {};
-      const next = vi.fn();
 
-      await getUserWasteRequests(req, res, next);
-
-      expect(next).toHaveBeenCalledWith(
-        errorHandler(403, "You are not authorized to view these waste requests")
-      );
-    });
-  });
 });
+
