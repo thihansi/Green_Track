@@ -1,28 +1,28 @@
 import WasteCollection from '../../models/IT22350114/wasteCollection.model.js';
-  
+
 // Create a new waste collection record
-export const createWasteCollection = async (req, res) => {
+export const createWasteCollection = async (req, res, next) => {
   const wasteCollection = new WasteCollection(req.body);
   try {
     await wasteCollection.save();
-    res.status(201).json(wasteCollection);
+    res.status(201).json({ success: true, data: wasteCollection });
   } catch (error) {
-    res.status(409).json({ message: error.message });
+    next(error);  // Pass error to global error handler
   }
 };
 
 // Get all waste collection records
-export const getWasteCollections = async (req, res) => {
+export const getWasteCollections = async (req, res, next) => {
   try {
     const wasteCollections = await WasteCollection.find();
-    res.status(200).json(wasteCollections);
+    res.status(200).json({ success: true, data: wasteCollections });
   } catch (error) {
-    res.status(404).json({ message: error.message });
+    next(error);  // Pass error to global error handler
   }
 };
 
 // Get a waste collection record by ID
-export const getWasteCollectionById = async (req, res) => {
+export const getWasteCollectionById = async (req, res, next) => {
   const { wasteCollectionId } = req.params;
   try {
     const wasteCollection = await WasteCollection.findById(wasteCollectionId);
@@ -32,14 +32,14 @@ export const getWasteCollectionById = async (req, res) => {
         message: "Waste collection record not found",
       });
     }
-    res.status(200).json(wasteCollection);
+    res.status(200).json({ success: true, data: wasteCollection });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);  // Pass error to global error handler
   }
 };
 
 // Update a waste collection record by ID
-export const updateWasteCollection = async (req, res) => {
+export const updateWasteCollection = async (req, res, next) => {
   const { wasteCollectionId } = req.params;
   try {
     const wasteCollection = await WasteCollection.findByIdAndUpdate(wasteCollectionId, req.body, { new: true, runValidators: true });
@@ -49,20 +49,14 @@ export const updateWasteCollection = async (req, res) => {
         message: "Waste collection record not found",
       });
     }
-    res.status(200).json({
-      success: true,
-      wasteCollection,
-    });
+    res.status(200).json({ success: true, data: wasteCollection });
   } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    next(error);  // Pass error to global error handler
   }
 };
 
 // Delete a waste collection record by ID
-export const deleteWasteCollection = async (req, res) => {
+export const deleteWasteCollection = async (req, res, next) => {
   const { wasteCollectionId } = req.params;
   try {
     const wasteCollection = await WasteCollection.findByIdAndDelete(wasteCollectionId);
@@ -77,47 +71,38 @@ export const deleteWasteCollection = async (req, res) => {
       message: "Waste collection record deleted successfully",
     });
   } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    next(error);  // Pass error to global error handler
   }
 };
 
 // Get waste collection records by resident ID
-export const getWasteCollectionsByResidentId = async (req, res) => {
+export const getWasteCollectionsByResidentId = async (req, res, next) => {
   const { residentId } = req.params;
   try {
     const wasteCollections = await WasteCollection.find({ residentId });
-    res.status(200).json(wasteCollections);
+    res.status(200).json({ success: true, data: wasteCollections });
   } catch (error) {
-    res.status(404).json({ message: error.message });
+    next(error);  // Pass error to global error handler
   }
 };
 
 // Get waste collection records by collection month
-export const getWasteCollectionsByCollectionMonth = async (req, res) => {
-    const { collectionDate } = req.params; // Expecting format 'YYYY-MM' (e.g., '2024-10')
+export const getWasteCollectionsByCollectionMonth = async (req, res, next) => {
+  const { collectionDate } = req.params; // Expecting format 'YYYY-MM' (e.g., '2024-10')
+  try {
+    const date = new Date(collectionDate + '-01');
+    const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+    const endOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 1);
 
-    try {
-        // Parse the year and month from the collectionDate
-        const date = new Date(collectionDate + '-01'); // Add a day to create a valid date
-        const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1); // First day of the month
-        const endOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 1); // First day of the next month
+    const wasteCollections = await WasteCollection.find({
+      collectionDate: {
+        $gte: startOfMonth,
+        $lt: endOfMonth
+      }
+    });
 
-        // Find records in the specified month
-        const wasteCollections = await WasteCollection.find({
-            collectionDate: {
-                $gte: startOfMonth,
-                $lt: endOfMonth
-            }
-        });
-
-        res.status(200).json(wasteCollections);
-    } catch (error) {
-        res.status(404).json({ message: error.message });
-    }
+    res.status(200).json({ success: true, data: wasteCollections });
+  } catch (error) {
+    next(error);  // Pass error to global error handler
+  }
 };
-
-
-
