@@ -1,432 +1,270 @@
-import { describe, it, expect, beforeEach, vi } from "vitest"; // Importing from vitest
-import request from "supertest";
-import app from "../../server.js";
+import { describe, it, expect, vi, beforeEach, response } from "vitest";
+import {
+  createInventory,
+  getInventoryItems,
+  deleteInventoryItems,
+  updateInventoryItems,
+} from "../../controllers/IT22577160/inventory.controller.js";
+import { errorHandler } from "../../utils/error.js";
 import Inventory from "../../models/IT22577160/inventory.model.js";
-import jwt from "jsonwebtoken";
 
+// Mock the Inventory model
 vi.mock("../../models/IT22577160/inventory.model.js");
 
-//---------------------CREATE TEST CASE---------------------//
-describe("Create Equipment to Inventory bulk ", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
 
-  // 1. Test successful inventory creation
-  it("should add Equipment to Inventory bulk", async () => {
-    try {
-      //Mocking the save function of Inventory
-      Inventory.mockImplementation(() => ({
-        save: vi.fn().mockResolvedValue({
-          userId: "12345",
-          itemName: "Shredder",
-          category: "WasteBin",
-          image:
-            "https://image.made-in-china.com/2f0j00RoUzLfprRcql/120L-Wheelie-Garbage-Bin-Rubbish-Container-Waste-Pedal-Trash-Can-Plastic-Dustbin.webp",
-          quantity: 2,
-          condition: "good",
-          description: "Made with Plastic",
-          location: "123 Street",
-          type: "Recycle",
-          offer: "true",
-          regularPrice: 1000,
-          discountPrice: 50,
-          slug: "12345",
-        }),
-      }));
-
-      const token = jwt.sign(
-        { id: "66fc503f39be3b9ed09364e3", EquipmentInventoryManger: true },
-        process.env.JWT_SECRET
-      );
-
-      // Simulate test environment
-      process.env.NODE_ENV = "test";
-
-      //Send a POST request to createEquipment route
-      const response = await request(app)
-        .post("/api/inventory/create")
-        .set("Authorization", `Bearer ${token}`)
-        .send({
-          userId: "12345",
-          itemName: "Shredder",
-          category: "WasteBin",
-          image:
-            "https://image.made-in-china.com/2f0j00RoUzLfprRcql/120L-Wheelie-Garbage-Bin-Rubbish-Container-Waste-Pedal-Trash-Can-Plastic-Dustbin.webp",
-          quantity: 3,
-          condition: "good",
-          description: "Made with Plastic",
-          location: "123 Street",
-          type: "Recycle",
-          offer: "true",
-          regularPrice: 2500,
-          discountPrice: 500,
-          slug: "12345",
-        });
-
-      // Assertions
-      expect(response.statusCode).toBe(201); // Success status
-      expect(response.body.success).toBe(true);
-      expect(response.body.data.itemName).toBe("New Equipment");
-    } catch (error) {
-      console.error("Test failed with error:", error);
-    }
-  });
-
-  // negative test case for create equipment
-  app.post("/api/inventory/create", (req, res) => {
-    console.log("Route Hit: /api/inventory/create");
-    it("should return 400 error for missing required fields", async () => {
-      const res = await request(app).post("/api/inventory/create").send({
-        userId: "12345",
-        itemName: "Shredder",
-        category: "WasteBin",
-        image:
-          "https://image.made-in-china.com/2f0j00RoUzLfprRcql/120L-Wheelie-Garbage-Bin-Rubbish-Container-Waste-Pedal-Trash-Can-Plastic-Dustbin.webp",
-        quantity: "123 Street",
-
-        // Missing ScheduleDate, Location, Category
-      });
-
-      expect(res.status).toBe(400);
-      expect(res.body).toHaveProperty(
-        "message",
-        "Please fill in all required fields."
-      );
-    });
-  });
-
-  //---------------------DELETE TEST CASE---------------------//
-  describe("Delete added Equipment in inventory bulk", () => {
+//Test case for Inventory creation
+describe("InventoryController Unit Tests", () => {
+  describe("Create Equipment to Inventory bulk ", () => {
+    let req, res, next;
     beforeEach(() => {
       vi.clearAllMocks();
+      
     });
-
-    // Test case for successfully deleting a added equipment
-    it("should delete a added Equipment successfully", async () => {
+  
+    // 1. Test successful inventory creation
+    it("should add Equipment to Inventory bulk", async () => {
       try {
-        // Mocking the findOneAndDelete function of Inventory
-        Inventory.findOneAndDelete.mockResolvedValue({
-          userId: "12345",
-          itemName: "Shredder",
-          category: "WasteBin",
-          image:
-            "https://image.made-in-china.com/2f0j00RoUzLfprRcql/120L-Wheelie-Garbage-Bin-Rubbish-Container-Waste-Pedal-Trash-Can-Plastic-Dustbin.webp",
-          quantity: 5,
-          condition: "good",
-          description: "made with Plastic",
-          location: "123 Street",
-          type: "Recycle",
-          offer: "true",
-          regularPrice: 1000,
-          discountPrice: 400,
-          slug: "12345",
-        });
+        //Mocking the save function of Inventory
+        Inventory.mockImplementation(() => ({
+          save: vi.fn().mockResolvedValue({
 
-        // Generate a JWT token for authentication
-        const token = jwt.sign(
-          { id: "66fc503f39be3b9ed09364e3" },
-          process.env.JWT_SECRET
-        );
-
-        // Send a DELETE request
-        const response = await request(app)
-          .delete("/api/inventory/deleteInventoryItems/12345/4521")
-          .set("Authorization", `Bearer ${token}`); // Set the token for auth
-
-        // Assertions
-        expect(response.statusCode).toBe(200); // Success status
-        expect(response.body.message).toBe(
-          "Successfully deleted the equipment"
-        );
-      } catch (error) {
-        console.error("Test failed with error:", error);
-      }
-    });
-
-    // negative test case for delete equipment
-    it("should return 404 if equipment is not found or user not authorized", async () => {
-      try {
-        // Mocking the findOneAndDelete function to return null (not found)
-        Inventory.findOneAndDelete.mockResolvedValue(null);
-
-        // Generate a JWT token for authentication
-        const token = jwt.sign(
-          { id: "66fc503f39be3b9ed09364e3" },
-          process.env.JWT_SECRET
-        );
-
-        // Send a DELETE request to your delete route
-        const response = await request(app)
-          .delete("/api/inventory/deleteInventoryItems/12345/4521")
-          .set("Authorization", `Bearer ${token}`);
-
-        // Assertions
-        expect(response.statusCode).toBe(404); // Not found status
-        expect(response.body.message).toBe(
-          "Equipment not found or you are not authorized to delete this"
-        );
-      } catch (error) {
-        console.error("Test failed with error:", error);
-      }
-    });
-  });
-
-  //---------------------GET ALL TEST CASE
-  // 1.Mock the Inventory.find() method to simulate database interaction.
-  //2. Handle success scenarios where equipments are fetched.
-  //3. Handle failure scenarios such as internal server errors.
-  describe("Get Equipments", () => {
-    beforeEach(() => {
-      vi.clearAllMocks();
-    });
-
-    // Test case for successfully fetching inventory items
-    it("should get all Inventory for the specified id", async () => {
-      try {
-        // Mocking the Inventory.find function
-        Inventory.find.mockResolvedValue([
-          {
             userId: "12345",
             itemName: "Shredder",
             category: "WasteBin",
-            image:
-              "https://image.made-in-china.com/2f0j00RoUzLfprRcql/120L-Wheelie-Garbage-Bin-Rubbish-Container-Waste-Pedal-Trash-Can-Plastic-Dustbin.webp",
-            quantity: 5,
-            condition: "GOOD",
+            image: "https://image.made-in-china.com/2f0j00RoUzLfprRcql/120L-Wheelie-Garbage-Bin-Rubbish-Container-Waste-Pedal-Trash-Can-Plastic-Dustbin.webp",
+            quantity: 2,
+            condition: 1,
             description: "Made with Plastic",
             location: "123 Street",
-            type: "wastebin",
-            offer: "true",
-            regularPrice: 4500,
-            discountPrice: 400,
-            slug: "12345",
-          },
-          {
-            userId: "12345",
-            itemName: "Shredder",
-            category: "wastebin",
-            image:
-              "https://image.made-in-china.com/2f0j00RoUzLfprRcql/120L-Wheelie-Garbage-Bin-Rubbish-Container-Waste-Pedal-Trash-Can-Plastic-Dustbin.webp",
-            quantity: 4,
-            condition: "good",
-            description: "Made with Plastic",
-            location: "123 Street",
-            type: "Good",
-            offer: "true",
-            regularPrice: 800,
-            discountPrice: 200,
-            slug: "12345",
-          },
-        ]);
+            type: "Recycle",
+            offer: true,
+            regularPrice: 1000,
+            discountPrice: 50,
+            slug: "shredder-wastebin-12345"
+          }),
+        }));
 
-        // Generate a JWT token for authentication
-        const token = jwt.sign(
-          { id: "66fc503f39be3b9ed09364e3" },
-          process.env.JWT_SECRET
-        );
-
-        // Send a GET request to getInventoryItems route
-        const response = await request(app)
-          .get("/api/inventory/getInventoryItems")
-          .set("Authorization", `Bearer ${token}`)
-          .query({ resourceId: "66fc503f39be3b9ed09364e3" }); // Assuming resourceId is passed as a query param
-
-        // Assertions
-        expect(response.statusCode).toBe(200); // Success status
-        expect(Array.isArray(response.body)).toBe(true);
-        expect(response.body.length).toBe(2); // Check that two requests were returned
-        expect(response.body[0].itemName).toBe("Shredder");
-        expect(response.body[1].itemName).toBe("Shredder");
+        //Assertions
+        expect(response.statusCode).toBe(201); // Success status
+        expect(response.body.success).toBe(true);
+        expect(response.body.data.itemName).toBe("New Equipment");
       } catch (error) {
         console.error("Test failed with error:", error);
       }
     });
 
-    // Test case for handling internal server errors
-    // negative test case for get all inventory
-    it("should return a 500 status if there is a server error", async () => {
-      try {
-        // Mocking the WasteShedule.find to throw an error
-        Inventory.find.mockRejectedValue(new Error("Internal Server Error"));
+    // Test case 2: Create Inventory - Authorization Test
+    it("should not allow creating inventory if the user is not an EquipmentInventoryManager", async () => {
+      const req = { user: { EquipmentInventoryManger: false }, body: {} };
+      const res = {};
+      const next = vi.fn();
 
-        // Generate a JWT token for authentication
-        const token = jwt.sign(
-          { id: "66fc503f39be3b9ed09364e3" },
-          process.env.JWT_SECRET
-        );
+      await createInventory(req, res, next);
 
-        // Send a GET request to your getWasteRequests route
-        const response = await request(app)
-          .get("/api/inventory/getInventoryItems")
-          .set("Authorization", `Bearer ${token}`)
-          .query({ resourceId: "66fc503f39be3b9ed09364e3" });
+      expect(next).toHaveBeenCalledWith(
+        errorHandler(403, "You are not authorized to create a listing")
+      );
+    });
 
-        // Assertions
-        expect(response.statusCode).toBe(500); // Internal server error status
-        expect(response.body).toHaveProperty("msg", "Internal Server Error");
-      } catch (error) {
-        console.error("Test failed with error:", error);
-      }
+    // Test case 3: Create Inventory - Validation Test
+    it("should not create inventory if required fields are missing", async () => {
+      const req = {
+        user: { EquipmentInventoryManger: true },
+        body: { itemName: "" },
+      };
+      const res = {};
+      const next = vi.fn();
+
+      await createInventory(req, res, next);
+
+      expect(next).toHaveBeenCalledWith(
+        errorHandler(400, "Please Provide all the required fields")
+      );
     });
   });
+});
+
+
+//Get Equipment from Inventory bulk
+describe("Get Equipment from Inventory bulk ", () => {
+  // Test case 4: Get Inventory Items - Query Parsing Test
+  it("should parse query parameters and get all the items", async () => {
+    const req = {
+      query: {
+        startIndex: "5",
+        limit: "10",
+        order: "asc",
+        category: "Electronics",
+      },
+    };
+    const res = { status: vi.fn().mockReturnThis(), json: vi.fn() };
+    const next = vi.fn();
+
+    Inventory.find.mockResolvedValueOnce([]); // Mocking Inventory.find()
+    Inventory.countDocuments.mockResolvedValueOnce(0); // Mocking Inventory.countDocuments()
+
+    await getInventoryItems(req, res, next);
+
+    expect(req.pagination).toEqual({
+      startIndex: 5,
+      limit: 10,
+      sortDirection: 1,
+    });
+    expect(req.filters).toEqual({ category: "Electronics" });
+  });
+});
+
+
+//Update Equipment from Inventory bulk
+describe('updateInventoryItems', () => {
+  let req, res, next;
+
+  beforeEach(() => {
+    // Reset the mocks and set up the mock request, response, and next function
+    vi.clearAllMocks();
+
+    req = {
+      params: {
+        postId: '12345',
+      },
+      body: {
+        itemName: 'Updated Item',
+        description: 'Updated Description',
+        location: 'Updated Location',
+        category: 'Updated Category',
+        quantity: 10,
+        type: 'Updated Type',
+        image: 'updated-image.jpg',
+        condition: 'Updated Condition',
+        regularPrice: 100,
+        discountPrice: 80,
+        offer: '20% Off',
+      },
+      user: {
+        EquipmentInventoryManger: true, // Mocking the required user property
+      },
+    };
+
+    res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    };
+
+    next = vi.fn();
+  });
+
+
+  // Test case 5: Update Inventory Items - Success Test
+  it('should update an inventory item successfully and return the updated item', async () => {
+    // Arrange: Mock the findByIdAndUpdate function to return the updated resource
+    const mockUpdatedResource = {
+      _id: '12345',
+      ...req.body,
+    };
+    Inventory.findByIdAndUpdate.mockResolvedValue(mockUpdatedResource);
+
+    // Act: Call the wrapped updateInventoryItems function
+    await updateInventoryItems(req, res, next);
+
+    // Assert: Check that the correct methods were called with the expected arguments
+    expect(Inventory.findByIdAndUpdate).toHaveBeenCalledWith(
+      req.params.postId,
+      {
+        $set: {
+          itemName: req.body.itemName,
+          description: req.body.description,
+          location: req.body.location,
+          category: req.body.category,
+          quantity: req.body.quantity,
+          type: req.body.type,
+          image: req.body.image,
+          condition: req.body.condition,
+          regularPrice: req.body.regularPrice,
+          discountPrice: req.body.discountPrice,
+          offer: req.body.offer,
+        },
+      },
+      { new: true }
+    );
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(mockUpdatedResource);
+    expect(next).not.toHaveBeenCalled();
+  });
+
+
+   //Test case 6: Update Inventory Items - Authorization Test
+   it("should not allow updating inventory if the user is not authorized", async () => {
+    const req = {
+      user: { id: "user1" },
+      params: { userId: "user2" },
+      body: {},
+    };
+    const res = {};
+    const next = vi.fn();
+
+    await updateInventoryItems(req, res, next);
+
+    expect(next).toHaveBeenCalledWith(
+      errorHandler(403, "You are not authorized to create a listing")
+    );
+  });
+});
 
  
 
-  // Negative test case for get all inventory
-  it("should return a 404 error if no inventory items are found for the user", async () => {
-    try {
-      // Mocking Inventory.find to return an empty array (no inventory items found)
-      Inventory.find.mockResolvedValue([]);
 
-      // Generate a JWT token for the authorized user
-      const token = jwt.sign(
-        { id: "66fc503f39be3b9ed09364e3" },
-        process.env.JWT_SECRET
-      );
+// Test case 7: Delete Inventory Items - Authorization Test
+describe("Delete Inventory Items", () => {
+  beforeEach(() => {
+    // Clear previous mocks
+    vi.clearAllMocks();
 
-      // Send a GET request to the getInventoryItems route
-      const response = await request(app)
-        .get("/api/inventory/getInventoryItems/66fc503f39be3b9ed09364e3")
-        .set("Authorization", `Bearer ${token}`);
-
-      // Assertions
-      expect(response.statusCode).toBe(404); // Check if the status code is 404
-      expect(response.body).toHaveProperty(
-        "message",
-        "No inventory items found"
-      );
-    } catch (error) {
-      console.error("Test failed with error:", error);
-    }
+    // Mock the delete operation
+    Inventory.findByIdAndDelete = vi.fn();
   });
 
-  //----------------------UPDTAE TEST CASE
-  //1. Successful update
-  //2. Unauthorized access where the user is not authorized to update the Equipment.
-  //3. Equipments not found for the given.
-  //4. Server error in case of a failure in the database query.
+  // Test case 8: Delete Inventory Items - Success Test
+  it("should return 200 and success message when the inventory item is deleted", async () => {
+    const req = {
+      params: { id: "someItemId" }, // Replace with your actual test ID
+      user: { EquipmentInventoryManger: true }, // Mock the user object
+    };
+    const res = {
+      status: vi.fn().mockReturnThis(), // Chainable
+      json: vi.fn(),
+    };
+    const next = vi.fn();
 
-  describe("Update equipments added", () => {
-    beforeEach(() => {
-      vi.clearAllMocks();
-    });
+    await deleteInventoryItems(req, res, next); // Call the delete function
 
-    // Test case for successfully updating Inventory
-    it("should update the Equipment successfully", async () => {
-      try {
-        // Mocking the Inventory.findOneAndUpdate function to return updated data
-        Inventory.findOneAndUpdate.mockResolvedValue({
-          userId: "12345",
-          itemName: "Shredder",
-          category: "wastebin",
-          image:
-            "https://image.made-in-china.com/2f0j00RoUzLfprRcql/120L-Wheelie-Garbage-Bin-Rubbish-Container-Waste-Pedal-Trash-Can-Plastic-Dustbin.webp",
-          quantity: 4,
-          condition: "good",
-          description: "Made with Plastic",
-          location: "123 Street",
-          type: "good",
-          offer: "true",
-          regularPrice: 800,
-          discountPrice: 150,
-          slug: "12345",
-        });
-
-        // Generate a JWT token for authentication
-        const token = jwt.sign(
-          { id: "66fc503f39be3b9ed09364e3" },
-          process.env.JWT_SECRET
-        );
-
-        // Send a PUT request to the updateInventory route
-        const response = await request(app)
-          .put("/api/inventory/updateInventoryItems/123/456")
-          .set("Authorization", `Bearer ${token}`)
-          .send({
-            userId: "12345",
-            itemName: "Shredder",
-            category: "wastebin",
-            image:
-              "https://image.made-in-china.com/2f0j00RoUzLfprRcql/120L-Wheelie-Garbage-Bin-Rubbish-Container-Waste-Pedal-Trash-Can-Plastic-Dustbin.webp",
-            quantity: 4,
-            condition: "good",
-          });
-
-        // Assertions
-        expect(response.statusCode).toBe(200); // Success status
-        expect(response.body).toHaveProperty(
-          "message",
-          "Successfully updated the inventory"
-        );
-        expect(response.body.updatedRequest.itemName).toBe("Shredder");
-        expect(response.body.updatedRequest.category).toBe("Pending");
-      } catch (error) {
-        console.error("Test failed with error:", error);
-      }
-    });
-
-    // Test case for unauthorized access
-    it("should return a 403 error if the user is not authorized to update the added equipments", async () => {
-      try {
-        // Generate a JWT token for a different user
-        const token = jwt.sign({ id: "anotherUserId" }, process.env.JWT_SECRET);
-
-        // Mock Inventory.findOneAndUpdate to return null (indicating unauthorized access)
-        Inventory.findOneAndUpdate.mockResolvedValue(null);
-
-        // Send a PUT request with a different userId
-        const response = await request(app)
-          .put("/api/inventory/updateInventoryItems/124/896")
-          .set("Authorization", `Bearer ${token}`)
-          .send({
-            Location: "456 Street",
-            itemName: "Shredder",
-            Category: "Glass",
-          });
-
-        // Assertions
-        expect(response.statusCode).toBe(404); // Unauthorized status
-        expect(response.body).toHaveProperty(
-          "message",
-          "Equipments not found or you are not authorized to update this"
-        );
-      } catch (error) {
-        console.error("Test failed with error:", error);
-      }
-    });
-
-    // Negative test case for updating inventory
-    it("should return a 404 error if the Equipments is not found", async () => {
-      try {
-        // Mock Inventory.findOneAndUpdate to return null
-        Inventory.findOneAndUpdate.mockResolvedValue(null);
-
-        // Generate a JWT token for the authorized user
-        const token = jwt.sign(
-          { id: "66fc503f39be3b9ed09364e3" },
-          process.env.JWT_SECRET
-        );
-
-        // Send a PUT request to the updateInventory route
-        const response = await request(app)
-          .put("/api/inventory/updateInventoryItems/124/896")
-          .set("Authorization", `Bearer ${token}`)
-          .send({
-            Location: "456 Street",
-            itemName: "Shredder",
-            Category: "Glass",
-          });
-
-        // Assertions
-        expect(response.statusCode).toBe(404); // Not found status
-        expect(response.body).toHaveProperty(
-          "message",
-          "Equipments are not found or you are not authorized to update this"
-        );
-      } catch (error) {
-        console.error("Test failed with error:", error);
-      }
+    // Assertions to verify the expected behavior
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({
+      message: "The resource has been deleted successfully",
     });
   });
-})
+
+  // Test case 9: Delete Inventory Items - Error Test
+  it("should call next with error when an error occurs", async () => {
+    const req = {
+      user: {
+        EquipmentInventoryManager: true,
+      },
+      params: {
+        itemId: "invalid-id", // Use an invalid ID to trigger an error
+      },
+    };
+    const res = {};
+    const next = vi.fn();
+
+    // Simulate an error scenario by throwing an error from the mock
+    Inventory.findByIdAndDelete.mockRejectedValueOnce(
+      new Error("Database error")
+    );
+    
+
+    await deleteInventoryItems(req, res, next);
+
+    expect(next).toHaveBeenCalledWith(expect.any(Error));
+  });
+});
