@@ -1,4 +1,4 @@
-import Billing from '../../models/IT22003546_models/billing.model.js';
+import Billing from '../../models/IT22003546/billing.model.js';
 
 // Create a new collection billing
 export const createBilling = async (req, res) => {

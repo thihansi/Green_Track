@@ -7,9 +7,9 @@ import authRoutes from "./routes/auth.route.js";
 import inventoryRoutes from "./routes/IT22577160/inventory.route.js";
 import checkoutRoutes from "./routes/IT22577160/checkout.route.js";
 import commentRoutes from "./routes/IT22577160/comment.route.js";
-import pricingRoutes from "./routes/IT22003546_Routes/pricing.route.js";
-import billingRoutes from "./routes/IT22003546_Routes/billing.route.js";
-import paymentRoutes from "./routes/IT22003546_Routes/payment.route.js";
+import pricingRoutes from "./routes/IT22003546/pricing.route.js";
+import billingRoutes from "./routes/IT22003546/billing.route.js";
+import paymentRoutes from "./routes/IT22003546/payment.route.js";
 import wasteCollectionRoutes from "./routes/IT22350114/wasteCollection.route.js";
 import wasteScheduleRoutes from "./routes/IT22607232/WasteSchedule.route.js";
 
