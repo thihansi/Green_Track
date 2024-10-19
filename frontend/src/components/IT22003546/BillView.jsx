@@ -324,7 +324,7 @@ const CalculateTotalPrice = () => {
                             </Table.Head>
                             <Table.Body>
                                 {userTotalCosts.map((cost, index) => (
-                                    <Table.Row key={index} className={`hover:bg-gray-200 transition duration-200`}>
+                                    <Table.Row key={index} className={`hover:bg-gray-200 transition duration-200 ${finalAmountToPay <= 0 ? 'bg-green-100' : 'bg-red-100'}`}>
                                         <Table.Cell>
                                             {cost.garbageDetails.map((item, idx) => (
                                                 <div key={idx}>
