@@ -1,8 +1,9 @@
 import mongoose from "mongoose";
+import WasteFactory from "./wasteFactory.js";
 
 // Define allowed waste item types for each category
-const RECYCLABLE_TYPES = ["Paper", "Plastic", "Glass", "Metal"];
-const NON_RECYCLABLE_TYPES = ["Food Waste", "Organic", "Hazardous", "Other"];
+// const RECYCLABLE_TYPES = ["Paper", "Plastic", "Glass", "Metal"];
+// const NON_RECYCLABLE_TYPES = ["Food Waste", "Organic", "Hazardous", "Other"];
 
 const wasteCollectionSchema = new mongoose.Schema(
   {
@@ -36,25 +37,37 @@ const wasteCollectionSchema = new mongoose.Schema(
           required: true,
           validate: {
             validator: function (value) {
-              // Validate that itemType matches the wasteType category
-              if (
-                this.wasteType === "Recyclable" &&
-                RECYCLABLE_TYPES.includes(value)
-              ) {
-                return true;
-              }
-              if (
-                this.wasteType === "Non-Recyclable" &&
-                NON_RECYCLABLE_TYPES.includes(value)
-              ) {
-                return true;
-              }
-              return false; // Invalid itemType for the given wasteType
+              // Validate that the category matches the wasteType
+              return WasteFactory.createWaste(this.wasteType, value, this.weight);
             },
-            // message: (props) =>
-            //   `${props.value} is not a valid item type for the category ${props.instance.wasteType}`,
+            message: (props) => `${props.value} is not a valid category for ${props.instance.wasteType}`,
           },
         },
+
+        // category: {
+        //   type: String,
+        //   required: true,
+        //   validate: {
+        //     validator: function (value) {
+        //       // Validate that itemType matches the wasteType category
+        //       if (
+        //         this.wasteType === "Recyclable" &&
+        //         RECYCLABLE_TYPES.includes(value)
+        //       ) {
+        //         return true;
+        //       }
+        //       if (
+        //         this.wasteType === "Non-Recyclable" &&
+        //         NON_RECYCLABLE_TYPES.includes(value)
+        //       ) {
+        //         return true;
+        //       }
+        //       return false; // Invalid itemType for the given wasteType
+        //     },
+        //     // message: (props) =>
+        //     //   `${props.value} is not a valid item type for the category ${props.instance.wasteType}`,
+        //   },
+        // },
         weight: {
           type: Number,
           required: true,
