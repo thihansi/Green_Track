@@ -1,24 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom"; 
+import { useNavigate, useParams } from "react-router-dom";
 import { Button, Label, TextInput, Select } from "flowbite-react";
-import { toast, ToastContainer } from "react-toastify"; 
-import 'react-toastify/dist/ReactToastify.css'; 
+import { toast, ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+import WasteFactory from "../../../../backend/models/IT22350114/wasteFactory";
+import { generateCollectionId } from "../../utils";
 
 const WasteCollectionForm = () => {
-  const { currentUser } = useSelector((state) => state.user);
-  const { collectionId } = useParams(); 
-  const navigate = useNavigate();  // Add navigate hook
+  const { collectionId } = useParams();
+  const navigate = useNavigate();
 
+  // Define the waste categories
   const RECYCLABLE_TYPES = ["Paper", "Plastic", "Glass", "Metal"];
   const NON_RECYCLABLE_TYPES = ["Food Waste", "Organic", "Hazardous", "Other"];
 
   // Define the initial form state
   const initialFormState = {
-    collectionId: "",
-    residentId: currentUser?.username || "",
-    collectionDate: "",
-    status: "Scheduled",
+    collectionId: collectionId || generateCollectionId(),
+    residentId: "",  // Leave Resident ID blank
+    collectionDate: collectionId ? "" : new Date().toISOString().split('T')[0], // Set current date only if it's a new form
     garbage: [
       {
         wasteType: "Recyclable",
@@ -29,7 +29,6 @@ const WasteCollectionForm = () => {
   };
 
   const [formData, setFormData] = useState(initialFormState);
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -45,13 +44,11 @@ const WasteCollectionForm = () => {
             throw new Error("Failed to fetch waste collection data");
           }
           const data = await response.json();
-
           const formattedDate = new Date(data.collectionDate).toISOString().split('T')[0];
 
           setFormData({
             ...data,
             collectionDate: formattedDate,
-            residentId: currentUser?.username || "",
           });
         } catch (err) {
           setError(err.message);
@@ -60,7 +57,7 @@ const WasteCollectionForm = () => {
     };
 
     fetchWasteCollectionData();
-  }, [collectionId, currentUser.username]);
+  }, [collectionId]);
 
   // Handle form field changes
   const handleChange = (e) => {
@@ -74,6 +71,7 @@ const WasteCollectionForm = () => {
     const updatedGarbage = [...formData.garbage];
     updatedGarbage[index] = { ...updatedGarbage[index], [name]: value };
 
+    // Reset the category based on wasteType selection
     if (name === "wasteType") {
       const defaultCategory =
         value === "Recyclable" ? RECYCLABLE_TYPES[0] : NON_RECYCLABLE_TYPES[0];
@@ -96,9 +94,13 @@ const WasteCollectionForm = () => {
 
   // Reset form to initial state after submission
   const resetForm = () => {
-    setFormData(initialFormState);
+    setFormData({
+      ...initialFormState,
+      collectionId: generateCollectionId(),  // Generate a new unique ID for the new form
+    });
   };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Final Payload before submission:", JSON.stringify(formData, null, 2));
@@ -107,15 +109,21 @@ const WasteCollectionForm = () => {
       setLoading(true);
       setError("");
 
-      let url = "/api/wasteCollection/create";  
-      let method = "POST";  
+      let url = "/api/wasteCollection/create";
+      let method = "POST";
 
       if (formData._id) {
-        url = `/api/wasteCollection/update/${formData._id}`;  
-        method = "PUT";  
+        url = `/api/wasteCollection/update/${formData._id}`;
+        method = "PUT";
       }
 
-      const payload = { ...formData, userRef: currentUser._id };
+      // Use Factory Method to generate garbage items
+      const updatedGarbage = formData.garbage.map(item => 
+        WasteFactory.createWaste(item.wasteType, item.category, item.weight)
+      );
+
+      const payload = { ...formData, garbage: updatedGarbage };
+
       const response = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
@@ -141,9 +149,8 @@ const WasteCollectionForm = () => {
 
       // Clear form if it's a new entry (creation)
       if (!formData._id) {
-        resetForm(); // Clear the form after successful creation
+        resetForm();
       } else {
-        // Redirect to dashboard after update
         navigate("/dashboard?tab=waste-collection");
       }
 
@@ -159,7 +166,7 @@ const WasteCollectionForm = () => {
         {collectionId ? "Update Waste Collection" : "Waste Collection Form"}
       </h1>
 
-      {error && <Alert color="failure">{error}</Alert>}
+      {error && <div className="text-red-500">{error}</div>}
 
       <ToastContainer />
 
@@ -172,22 +179,20 @@ const WasteCollectionForm = () => {
             type="text"
             name="collectionId"
             value={formData.collectionId}
-            onChange={handleChange}
-            placeholder="e.g., COL12345"
+            readOnly // This makes the input non-editable
             required
           />
         </div>
 
-        {/* Resident ID (read-only) */}
+        {/* Resident ID (leave blank) */}
         <div>
           <Label htmlFor="residentId">Resident ID</Label>
           <TextInput
             id="residentId"
             type="text"
             name="residentId"
-            value={formData.residentId}
-            readOnly
-            className="bg-gray-200"
+            value={formData.residentId} // Will remain blank initially
+            onChange={handleChange}  // Allow user input
           />
         </div>
 
@@ -202,21 +207,6 @@ const WasteCollectionForm = () => {
             onChange={handleChange}
             required
           />
-        </div>
-
-        {/* Status */}
-        <div>
-          <Label htmlFor="status">Status</Label>
-          <Select
-            id="status"
-            name="status"
-            value={formData.status}
-            onChange={handleChange}
-          >
-            <option value="Scheduled">Scheduled</option>
-            <option value="Collected">Collected</option>
-            <option value="Cancelled">Cancelled</option>
-          </Select>
         </div>
 
         {/* Garbage Items */}
