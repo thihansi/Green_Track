@@ -280,7 +280,7 @@ const CalculateTotalPrice = () => {
                                     const totalPaid = paymentsByResident[cost.residentId] || 0; // Get total paid by the resident
                                     const outstandingAmount = cost.totalPrice - totalPaid; // Calculate outstanding amount
                                     return (
-                                        <Table.Row key={index} className={`hover:bg-gray-200 transition duration-200`}>
+                                        <Table.Row key={index} className={`hover:bg-gray-200 transition duration-200 ${outstandingAmount ? 'bg-red-100' : 'bg-green-100'}`}>
                                             <Table.Cell>{cost.residentId}</Table.Cell>
                                             <Table.Cell>
                                                 {Object.entries(cost.garbageDetails).map(([category, details], idx) => (
