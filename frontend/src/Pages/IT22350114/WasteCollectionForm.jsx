@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button, Label, TextInput, Select } from "flowbite-react";
 import { toast, ToastContainer } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
+import "react-toastify/dist/ReactToastify.css";
 import WasteFactory from "../../../../backend/models/IT22350114/wasteFactory";
 import { generateCollectionId } from "../../utils";
 
@@ -17,8 +17,8 @@ const WasteCollectionForm = () => {
   // Define the initial form state
   const initialFormState = {
     collectionId: collectionId || generateCollectionId(),
-    residentId: "",  // Leave Resident ID blank
-    collectionDate: collectionId ? "" : new Date().toISOString().split('T')[0], // Set current date only if it's a new form
+    residentId: "", // Leave Resident ID blank
+    collectionDate: collectionId ? "" : new Date().toISOString().split("T")[0], // Set current date only if it's a new form
     garbage: [
       {
         wasteType: "Recyclable",
@@ -44,7 +44,9 @@ const WasteCollectionForm = () => {
             throw new Error("Failed to fetch waste collection data");
           }
           const data = await response.json();
-          const formattedDate = new Date(data.collectionDate).toISOString().split('T')[0];
+          const formattedDate = new Date(data.collectionDate)
+            .toISOString()
+            .split("T")[0];
 
           setFormData({
             ...data,
@@ -96,14 +98,17 @@ const WasteCollectionForm = () => {
   const resetForm = () => {
     setFormData({
       ...initialFormState,
-      collectionId: generateCollectionId(),  // Generate a new unique ID for the new form
+      collectionId: generateCollectionId(), // Generate a new unique ID for the new form
     });
   };
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Final Payload before submission:", JSON.stringify(formData, null, 2));
+    console.log(
+      "Final Payload before submission:",
+      JSON.stringify(formData, null, 2)
+    );
 
     try {
       setLoading(true);
@@ -118,7 +123,7 @@ const WasteCollectionForm = () => {
       }
 
       // Use Factory Method to generate garbage items
-      const updatedGarbage = formData.garbage.map(item => 
+      const updatedGarbage = formData.garbage.map((item) =>
         WasteFactory.createWaste(item.wasteType, item.category, item.weight)
       );
 
@@ -153,7 +158,6 @@ const WasteCollectionForm = () => {
       } else {
         navigate("/dashboard?tab=waste-collection");
       }
-
     } catch (err) {
       setError(err.message);
       setLoading(false);
@@ -192,7 +196,7 @@ const WasteCollectionForm = () => {
             type="text"
             name="residentId"
             value={formData.residentId} // Will remain blank initially
-            onChange={handleChange}  // Allow user input
+            onChange={handleChange} // Allow user input
           />
         </div>
 
