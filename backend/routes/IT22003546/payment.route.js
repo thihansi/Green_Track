@@ -1,5 +1,5 @@
 import express from 'express';
-import { createPayment, getPayments, getPaymentById, updatePayment, deletePayment, getPaymentByResidentId } from '../../controllers/IT22003546_Controllers/payment.controller.js';
+import { createPayment, getPayments, getPaymentById, updatePayment, deletePayment, getPaymentByResidentId } from '../../controllers/IT22003546/payment.controller.js';
 import { verifyToken } from '../../utils/verifyToken.js';
 
 const router = express.Router();

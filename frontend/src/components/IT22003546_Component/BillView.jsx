@@ -59,10 +59,9 @@ const CalculateTotalPrice = () => {
                             pricePerUnit: pricingItem ? pricingItem.pricePerUnit : 0,
                             cost,
                             category: item.category,
-                            collectionDate: item.collectionDate
                         };
                     });
-
+        
                     const recyclingDetails = residentWaste.garbage.filter(item => item.wasteType === "Recyclable").map(item => {
                         const pricingItem = pricingData.find(p => p.item === item.category);
                         const reward = item.weight * (pricingItem ? pricingItem.pricePerUnit : 0);
@@ -73,12 +72,14 @@ const CalculateTotalPrice = () => {
                             category: item.category,
                         };
                     });
-
+        
                     const totalGarbageCost = garbageDetails.reduce((total, item) => total + item.cost, 0);
                     const totalRecyclingReward = recyclingDetails.reduce((total, item) => total + item.reward, 0);
                     const totalPrice = totalGarbageCost - totalRecyclingReward;
-                    console.log(totalPrice);
-
+        
+                    // Access collectionDate directly from residentWaste
+                    const collectionDate = residentWaste.collectionDate;
+        
                     return {
                         residentId: residentWaste.residentId,
                         garbageDetails,
@@ -86,13 +87,14 @@ const CalculateTotalPrice = () => {
                         totalGarbageCost,
                         totalRecyclingReward,
                         totalPrice,
-                        collectionDate: garbageDetails.length > 0 ? garbageDetails[0].collectionDate : null
+                        collectionDate: collectionDate ? new Date(collectionDate).toLocaleDateString('en-CA') : 'N/A' // Ensure it's formatted properly
                     };
                 });
-
+        
                 setTotalCosts(costs);
             }
         };
+        
 
         calculateTotalCosts();
         setLoading(false);
@@ -109,7 +111,7 @@ const CalculateTotalPrice = () => {
                 totalGarbageCost: 0,
                 totalRecyclingReward: 0,
                 totalPrice: 0,
-                collectionDate: cost.collectionDate // Take collection date from the first entry
+                 // Take collection date from the first entry
             };
         }
         // Grouping garbage details
@@ -252,43 +254,43 @@ const CalculateTotalPrice = () => {
         
         
     return (
-        <div className="p-4 flex flex-col items-center">
+        <div className="p-4 flex flex-col items-center dark:bg-gray-900 dark:text-gray-100 min-h-screen">
             {currentUser.isAdmin ? (
                 <>
-                    <h2 className="text-xl font-semibold">Total Price Calculation for All Residents</h2>
+                    <h2 className="text-2xl font-semibold mb-4">Total Price Calculation for All Residents</h2>
                     {groupedAdminTotalCostsArray.length > 0 ? (
-                        <Table className="min-w-full bg-white border border-gray-300 shadow-lg rounded-lg mt-4">
+                        <Table className="min-w-full bg-gray-900 border border-gray-600 shadow-xl rounded-lg mt-4">
                             <Table.Head>
-                                <Table.HeadCell>Resident ID</Table.HeadCell>
-                                <Table.HeadCell>Garbage Details</Table.HeadCell>
-                                <Table.HeadCell>Garbage Cost</Table.HeadCell>
-                                <Table.HeadCell>Recycling Details</Table.HeadCell>
-                                <Table.HeadCell>Recycling Reward</Table.HeadCell>
-                                <Table.HeadCell>Total Price</Table.HeadCell>
-                                <Table.HeadCell>Collection Date</Table.HeadCell>
+                                <Table.HeadCell className="dark:bg-gray-700">Resident ID</Table.HeadCell>
+                                <Table.HeadCell className="dark:bg-gray-700">Garbage Details</Table.HeadCell>
+                                <Table.HeadCell className="dark:bg-gray-700">Garbage Cost</Table.HeadCell>
+                                <Table.HeadCell className="dark:bg-gray-700">Recycling Details</Table.HeadCell>
+                                <Table.HeadCell className="dark:bg-gray-700">Recycling Reward</Table.HeadCell>
+                                <Table.HeadCell className="dark:bg-gray-700">Total Price</Table.HeadCell>
+                                {/* <Table.HeadCell className="dark:bg-gray-700">Collection Date</Table.HeadCell> */}
                             </Table.Head>
                             <Table.Body>
                                 {groupedAdminTotalCostsArray.map((cost, index) => (
-                                    <Table.Row key={index} className="hover:bg-gray-100 transition duration-200">
+                                    <Table.Row key={index} className="hover:bg-gray-600 transition duration-200">
                                         <Table.Cell>{cost.residentId}</Table.Cell>
                                         <Table.Cell>
                                             {Object.entries(cost.garbageDetails).map(([category, details], idx) => (
                                                 <div key={idx}>
-                                                    {category}: {details.weight} kg (${details.pricePerUnit.toFixed(2)})
+                                                    {category}: {details.weight} kg (LKR{details.pricePerUnit.toFixed(2)})
                                                 </div>
                                             ))}
                                         </Table.Cell>
-                                        <Table.Cell>${cost.totalGarbageCost.toFixed(2)}</Table.Cell>
+                                        <Table.Cell>LKR{cost.totalGarbageCost.toFixed(2)}</Table.Cell>
                                         <Table.Cell>
                                             {Object.entries(cost.recyclingDetails).map(([category, details], idx) => (
                                                 <div key={idx}>
-                                                    {category}: {details.weight} kg (${details.pricePerUnit.toFixed(2)})
+                                                    {category}: {details.weight} kg (LKR{details.pricePerUnit.toFixed(2)})
                                                 </div>
                                             ))}
                                         </Table.Cell>
-                                        <Table.Cell>-${cost.totalRecyclingReward.toFixed(2)}</Table.Cell>
-                                        <Table.Cell>${cost.totalPrice.toFixed(2)}</Table.Cell>
-                                        <Table.Cell>{cost.collectionDate ? new Date(cost.collectionDate).toLocaleDateString('en-CA') : 'N/A'}</Table.Cell>
+                                        <Table.Cell>-LKR{cost.totalRecyclingReward.toFixed(2)}</Table.Cell>
+                                        <Table.Cell>LKR{cost.totalPrice.toFixed(2)}</Table.Cell>
+                                        {/* <Table.Cell>{cost.collectionDate ? new Date(cost.collectionDate).toLocaleDateString('en-CA') : 'N/A'}</Table.Cell> */}
                                     </Table.Row>
                                 ))}
                             </Table.Body>
@@ -299,37 +301,37 @@ const CalculateTotalPrice = () => {
                 </>
             ) : (
                 <>
-                    <h2 className="text-xl font-semibold">Your Total Price Calculation</h2>
+                    <h2 className="text-2xl font-semibold mb-4">Your Total Price Calculation</h2>
                     {userTotalCosts.length > 0 ? (
-                        <Table className="min-w-full bg-white border border-gray-300 shadow-lg rounded-lg mt-4">
+                        <Table className="min-w-full bg-gray-800 border border-gray-600 shadow-xl rounded-lg mt-4">
                             <Table.Head>
-                                <Table.HeadCell>Garbage Details</Table.HeadCell>
-                                <Table.HeadCell>Garbage Cost</Table.HeadCell>
-                                <Table.HeadCell>Recycling Details</Table.HeadCell>
-                                <Table.HeadCell>Recycling Reward</Table.HeadCell>
-                                <Table.HeadCell>Total Price</Table.HeadCell>
-                                <Table.HeadCell>Collection Date</Table.HeadCell>
+                                <Table.HeadCell className="dark:bg-gray-700">Garbage Details</Table.HeadCell>
+                                <Table.HeadCell className="dark:bg-gray-700">Garbage Cost</Table.HeadCell>
+                                <Table.HeadCell className="dark:bg-gray-700">Recycling Details</Table.HeadCell>
+                                <Table.HeadCell className="dark:bg-gray-700">Recycling Reward</Table.HeadCell>
+                                <Table.HeadCell className="dark:bg-gray-700">Total Price</Table.HeadCell>
+                                <Table.HeadCell className="dark:bg-gray-700">Collection Date</Table.HeadCell>
                             </Table.Head>
                             <Table.Body>
                                 {userTotalCosts.map((cost, index) => (
-                                    <Table.Row key={index} className="hover:bg-gray-100 transition duration-200">
+                                    <Table.Row key={index} className="hover:bg-gray-600 transition duration-200">
                                         <Table.Cell>
                                             {cost.garbageDetails.map((item, idx) => (
                                                 <div key={idx}>
-                                                    {item.category}: {item.weight} kg (${item.pricePerUnit.toFixed(2)})
+                                                    {item.category}: {item.weight} kg (LKR{item.pricePerUnit.toFixed(2)})
                                                 </div>
                                             ))}
                                         </Table.Cell>
-                                        <Table.Cell>${cost.totalGarbageCost.toFixed(2)}</Table.Cell>
+                                        <Table.Cell>LKR{cost.totalGarbageCost.toFixed(2)}</Table.Cell>
                                         <Table.Cell>
                                             {cost.recyclingDetails.map((item, idx) => (
                                                 <div key={idx}>
-                                                    {item.category}: {item.weight} kg (${item.pricePerUnit.toFixed(2)})
+                                                    {item.category}: {item.weight} kg (LKR{item.pricePerUnit.toFixed(2)})
                                                 </div>
                                             ))}
                                         </Table.Cell>
-                                        <Table.Cell>-${cost.totalRecyclingReward.toFixed(2)}</Table.Cell>
-                                        <Table.Cell>${cost.totalPrice.toFixed(2)}</Table.Cell>
+                                        <Table.Cell>-LKR{cost.totalRecyclingReward.toFixed(2)}</Table.Cell>
+                                        <Table.Cell>LKR{cost.totalPrice.toFixed(2)}</Table.Cell>
                                         <Table.Cell>{cost.collectionDate ? new Date(cost.collectionDate).toLocaleDateString('en-CA') : 'N/A'}</Table.Cell>
                                     </Table.Row>
                                 ))}
@@ -338,23 +340,19 @@ const CalculateTotalPrice = () => {
                     ) : (
                         <p>No data available to calculate total prices.</p>
                     )}
-                    {/* Card for Total Amount */}
-                    <div className="mt-4 p-4 bg-gray-100 rounded w-full max-w-md flex flex-col items-center">
+                    <div className="mt-4 p-4 bg-gray-800 text-gray-100 rounded w-full max-w-md flex flex-col items-center shadow-lg">
                         <h2 className="text-lg font-semibold">Total Amount to be Paid</h2>
-                        <p className="text-2xl font-bold">${finalAmountToPay.toFixed(2)}</p>
+                        <p className="text-3xl font-bold">LKR{finalAmountToPay.toFixed(2)}</p>
                         <Button 
                             onClick={handlePayment} 
-                            className="mt-2 w-full bg-green-500 text-white rounded">
+                            className="mt-2 w-full bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-200">
                             Pay Now
                         </Button>
                     </div>
                 </>
             )}
-            
-            
+
             <PaymentDetails userPayments={userPayments} isAdmin={currentUser.isAdmin} />
-        
-            
         </div>
     );
 };

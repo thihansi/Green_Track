@@ -1,4 +1,4 @@
-import Payment from "../../models/IT22003546_models/payment.model.js";
+import Payment from "../../models/IT22003546/payment.model.js";
 
 // Create a new collection payment
 export const createPayment = async (req, res) => {

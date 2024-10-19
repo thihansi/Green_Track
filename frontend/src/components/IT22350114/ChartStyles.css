@@ -1,14 +1,63 @@
 .cartoon-card {
-    background: linear-gradient(145deg, #ecfccb, #d9f99d);
+    background: linear-gradient(15deg, #1ed7b5, #f0f9a7);
     border-radius: 20px;
     box-shadow: 10px 10px 20px #d1d1d1,
                 -10px -10px 20px #ffffff;
     transition: all 0.3s ease;
-  }
-  
-  .cartoon-card:hover {
-    transform: translateY(-5px);
+    color: white; /* Ensure text is white for better contrast */
+}
+
+.cartoon-card:hover {
+    transform: translateY(-1px);
     box-shadow: 15px 15px 25px #d1d1d1,
                 -15px -15px 25px #ffffff;
+}
+
+
+
+.cartoon-card2 {
+    background: linear-gradient(145deg, #471069, #30c5d2);
+    border-radius: 20px;
+    box-shadow: 10px 10px 20px #d1d1d1,
+                -10px -10px 20px #ffffff;
+    transition: all 0.3s ease;
+    height: 300px; /* Adjust card height */
+}
+
+.cartoon-card2:hover {
+    transform: translateY(-1px);
+    box-shadow: 15px 15px 25px #d1d1d1,
+                -15px -15px 25px #ffffff;
+}
+
+.chart-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%; /* Full height */
+}
+
+.text-white {
+    color: #fff;
+}
+
+
+
+.monthly-waste-trends {
+    background: linear-gradient(145deg, #f86ca7, #f4d444); /* Gradient background */
+    border-radius: 20px; /* Rounded corners */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Shadow for depth */
+  }
+  
+  .monthly-waste-trends h2 {
+    text-align: center; /* Center the title */
+  }
+  
+  .recharts-tooltip {
+    background: rgba(255, 255, 255, 0.8); /* White background for tooltip */
+    border-radius: 5px; /* Rounded tooltip corners */
+    border: 1px solid #ccc; /* Light border */
+    padding: 5px; /* Padding for the tooltip */
   }
   

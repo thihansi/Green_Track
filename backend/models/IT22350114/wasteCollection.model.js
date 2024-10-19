@@ -51,8 +51,8 @@ const wasteCollectionSchema = new mongoose.Schema(
               }
               return false; // Invalid itemType for the given wasteType
             },
-            message: (props) =>
-              `${props.value} is not a valid item type for the category ${props.instance.wasteType}`,
+            // message: (props) =>
+            //   `${props.value} is not a valid item type for the category ${props.instance.wasteType}`,
           },
         },
         weight: {
