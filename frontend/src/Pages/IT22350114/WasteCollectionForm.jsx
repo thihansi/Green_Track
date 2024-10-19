@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom"; // Import useParams for route parameters
-import { Button, Label, TextInput, Select, Alert } from "flowbite-react";
+import { useNavigate, useParams } from "react-router-dom"; 
+import { Button, Label, TextInput, Select } from "flowbite-react";
+import { toast, ToastContainer } from "react-toastify"; 
+import 'react-toastify/dist/ReactToastify.css'; 
 
 const WasteCollectionForm = () => {
-  const navigate = useNavigate();
   const { currentUser } = useSelector((state) => state.user);
-  const { collectionId } = useParams(); // Get the collectionId from route parameters
+  const { collectionId } = useParams(); 
+  const navigate = useNavigate();  // Add navigate hook
 
   const RECYCLABLE_TYPES = ["Paper", "Plastic", "Glass", "Metal"];
   const NON_RECYCLABLE_TYPES = ["Food Waste", "Organic", "Hazardous", "Other"];
 
-  const [formData, setFormData] = useState({
+  // Define the initial form state
+  const initialFormState = {
     collectionId: "",
     residentId: currentUser?.username || "",
     collectionDate: "",
@@ -23,14 +26,15 @@ const WasteCollectionForm = () => {
         weight: "",
       },
     ],
-  });
+  };
+
+  const [formData, setFormData] = useState(initialFormState);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   // Fetch the waste collection data for the update
- // Fetch the waste collection data for the update
-useEffect(() => {
+  useEffect(() => {
     const fetchWasteCollectionData = async () => {
       if (collectionId) {
         try {
@@ -41,25 +45,23 @@ useEffect(() => {
             throw new Error("Failed to fetch waste collection data");
           }
           const data = await response.json();
-          
-          // Convert collectionDate to YYYY-MM-DD format
+
           const formattedDate = new Date(data.collectionDate).toISOString().split('T')[0];
-  
-          // Set formData with formatted date
+
           setFormData({
             ...data,
-            collectionDate: formattedDate, // Set the formatted date
-            residentId: currentUser?.username || "", // Make sure residentId is also set
+            collectionDate: formattedDate,
+            residentId: currentUser?.username || "",
           });
         } catch (err) {
           setError(err.message);
         }
       }
     };
-  
+
     fetchWasteCollectionData();
   }, [collectionId, currentUser.username]);
-  
+
   // Handle form field changes
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -72,7 +74,6 @@ useEffect(() => {
     const updatedGarbage = [...formData.garbage];
     updatedGarbage[index] = { ...updatedGarbage[index], [name]: value };
 
-    // If the wasteType is changed, reset the category to the first option based on the wasteType
     if (name === "wasteType") {
       const defaultCategory =
         value === "Recyclable" ? RECYCLABLE_TYPES[0] : NON_RECYCLABLE_TYPES[0];
@@ -93,27 +94,33 @@ useEffect(() => {
     });
   };
 
+  // Reset form to initial state after submission
+  const resetForm = () => {
+    setFormData(initialFormState);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(
-      "Final Payload before submission:",
-      JSON.stringify(formData, null, 2)
-    );
+    console.log("Final Payload before submission:", JSON.stringify(formData, null, 2));
 
     try {
       setLoading(true);
       setError("");
 
-      // Make sure to use the _id from formData (if you set it from fetch)
+      let url = "/api/wasteCollection/create";  
+      let method = "POST";  
+
+      if (formData._id) {
+        url = `/api/wasteCollection/update/${formData._id}`;  
+        method = "PUT";  
+      }
+
       const payload = { ...formData, userRef: currentUser._id };
-      const response = await fetch(
-        `/api/wasteCollection/update/${formData._id}`, // Ensure you use the MongoDB _id
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        }
-      );
+      const response = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
       const data = await response.json();
       setLoading(false);
@@ -121,7 +128,25 @@ useEffect(() => {
         return setError(data.message || "An error occurred");
       }
 
-      navigate("/WasteCollection");
+      // Show success toast notification
+      toast.success("Form submitted successfully!", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+
+      // Clear form if it's a new entry (creation)
+      if (!formData._id) {
+        resetForm(); // Clear the form after successful creation
+      } else {
+        // Redirect to dashboard after update
+        navigate("/dashboard?tab=waste-collection");
+      }
+
     } catch (err) {
       setError(err.message);
       setLoading(false);
@@ -135,6 +160,8 @@ useEffect(() => {
       </h1>
 
       {error && <Alert color="failure">{error}</Alert>}
+
+      <ToastContainer />
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Collection ID */}
