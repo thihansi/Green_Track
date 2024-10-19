@@ -1,21 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Button, Alert, Select } from "flowbite-react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { Button, Alert } from "flowbite-react";
+import { useNavigate } from "react-router-dom";
+import { generateExcelReport, generatePDFReport } from "../../utils";
 
 const WasteCollectionList = () => {
   const { currentUser } = useSelector((state) => state.user);
   const [wasteCollections, setWasteCollections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchWasteCollections = async () => {
       try {
-        const response = await fetch(
-          `/api/wasteCollection/getByResidentId/${currentUser.username}`
-        );
+        const url = currentUser.WasteCollectionManager
+          ? `/api/wasteCollection/get`
+          : `/api/wasteCollection/getByResidentId/${currentUser.username}`;
+
+        const response = await fetch(url);
         if (!response.ok) {
           throw new Error("Failed to fetch waste collections");
         }
@@ -29,33 +32,23 @@ const WasteCollectionList = () => {
     };
 
     fetchWasteCollections();
-  }, [currentUser.username]);
+  }, [currentUser.username, currentUser.WasteCollectionManager]);
 
   const handleDelete = async (collectionId) => {
-    if (
-      window.confirm(
-        "Are you sure you want to delete this waste collection record?"
-      )
-    ) {
+    if (window.confirm("Are you sure you want to delete this waste collection record?")) {
       try {
-        const response = await fetch(
-          `/api/wasteCollection/delete/${collectionId}`,
-          {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        const response = await fetch(`/api/wasteCollection/delete/${collectionId}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
         const data = await response.json();
         if (!response.ok) {
-          throw new Error(
-            data.message || "Failed to delete the waste collection"
-          );
+          throw new Error(data.message || "Failed to delete the waste collection");
         }
 
-        // Remove the deleted item from the state
         setWasteCollections((prev) =>
           prev.filter((collection) => collection._id !== collectionId)
         );
@@ -65,39 +58,97 @@ const WasteCollectionList = () => {
     }
   };
 
-  const handleStatusChange = async (collection, newStatus) => {
-    try {
-      const response = await fetch(
-        `/api/wasteCollection/update/${collection._id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ status: newStatus }),
-        }
-      );
-
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to update status");
-      }
-
-      // Update the local state with the new status
-      setWasteCollections((prev) =>
-        prev.map((item) =>
-          item._id === collection._id ? { ...item, status: newStatus } : item
-        )
-      );
-    } catch (err) {
-      setError(err.message);
-    }
-  };
-
   const handleUpdate = (collection) => {
-    // Navigate to the update form with the collection ID
     navigate(`/update/${collection._id}`);
   };
+
+  const prepareReportData = () => {
+    let totalRecyclablesWeight = 0;
+    let totalNonRecyclablesWeight = 0;
+
+    const reportData = wasteCollections.map((collection) => {
+      let recyclables = [];
+      let nonRecyclables = [];
+
+      collection.garbage.forEach((item) => {
+        if (["Paper", "Plastic", "Glass"].includes(item.category)) {
+          recyclables.push(`${item.weight}kg of ${item.category}`);
+          totalRecyclablesWeight += item.weight;
+        } else if (["Food Waste", "Organic", "Hazardous", "Metal"].includes(item.category)) {
+          nonRecyclables.push(`${item.weight}kg of ${item.category}`);
+          totalNonRecyclablesWeight += item.weight;
+        } else {
+          // Handle any unrecognized waste types by categorizing them as non-recyclable (or log for review)
+          nonRecyclables.push(`${item.weight}kg of ${item.category}`);
+          totalNonRecyclablesWeight += item.weight;
+        }
+      });
+
+      return {
+        collectionId: collection.collectionId,
+        residentId: collection.residentId,
+        collectionDate: new Date(collection.collectionDate).toLocaleDateString(),
+        recyclables: recyclables.length ? recyclables.join(', ') : '0kg',
+        nonRecyclables: nonRecyclables.length ? nonRecyclables.join(', ') : '0kg',
+      };
+    });
+
+    // Add totals row at the end
+    reportData.push({
+      collectionId: 'Total',
+      residentId: '',
+      collectionDate: '',
+      recyclables: `${totalRecyclablesWeight}kg`,
+      nonRecyclables: `${totalNonRecyclablesWeight}kg`,
+    });
+
+    return reportData;
+  };
+
+
+
+
+  // const handleCSVReport = () => {
+  //   const headers = ["Collection ID", "Resident ID", "Collection Date", "Recyclables", "Non-Recyclables"];
+  //   const rows = prepareReportData().map(row => [
+  //     row.collectionId,
+  //     row.residentId,
+  //     row.collectionDate,
+  //     row.recyclables,
+  //     row.nonRecyclables,
+  //   ]);
+
+  //   generateCSVReport(headers, rows, 'WasteCollectionReport');
+  // };
+
+
+
+  const handleExcelReport = () => {
+    const headers = ["Collection ID", "Resident ID", "Collection Date", "Recyclables", "Non-Recyclables"];
+    const rows = prepareReportData().map(row => [
+      row.collectionId,
+      row.residentId,
+      row.collectionDate,
+      row.recyclables,
+      row.nonRecyclables,
+    ]);
+
+    generateExcelReport(headers, rows, 'WasteCollectionReport');
+  };
+
+  const handlePDFReport = () => {
+    const headers = ["Collection ID", "Resident ID", "Collection Date", "Recyclables", "Non-Recyclables"];
+    const rows = prepareReportData().map(row => [
+      row.collectionId,
+      row.residentId,
+      row.collectionDate,
+      row.recyclables,
+      row.nonRecyclables,
+    ]);
+
+    generatePDFReport(headers, rows, 'WasteCollectionReport', 'Waste Collection and Recycling Overview');
+  };
+
 
   if (loading) return <div>Loading...</div>;
   if (error) return <Alert color="failure">{error}</Alert>;
@@ -110,28 +161,19 @@ const WasteCollectionList = () => {
           <thead className="bg-gray-800 text-white">
             <tr>
               <th className="border px-4 py-2">Collection ID</th>
+              <th className="border px-4 py-2">Resident ID</th>
               <th className="border px-4 py-2">Collection Date</th>
-              <th className="border px-4 py-2">Status</th>
               <th className="border px-4 py-2">Garbage Items</th>
               <th className="border px-4 py-2">Actions</th>
             </tr>
           </thead>
           <tbody>
             {wasteCollections.map((collection) => (
-              <tr key={collection.collectionId} className="hover:bg-gray-100">
+              <tr key={collection._id} className="hover:bg-gray-100">
                 <td className="border px-4 py-2">{collection.collectionId}</td>
+                <td className="border px-4 py-2">{collection.residentId}</td>
                 <td className="border px-4 py-2">
                   {new Date(collection.collectionDate).toLocaleDateString()}
-                </td>
-                <td className="border px-4 py-2">
-                  <Select
-                    value={collection.status}
-                    onChange={(e) => handleStatusChange(collection, e.target.value)}
-                  >
-                    <option value="Scheduled">Scheduled</option>
-                    <option value="Collected">Collected</option>
-                    <option value="Cancelled">Cancelled</option>
-                  </Select>
                 </td>
                 <td className="border px-4 py-2">
                   <ul>
@@ -146,10 +188,7 @@ const WasteCollectionList = () => {
                   <Button onClick={() => handleUpdate(collection)} color="info">
                     Update
                   </Button>
-                  <Button
-                    onClick={() => handleDelete(collection._id)}
-                    color="failure"
-                  >
+                  <Button onClick={() => handleDelete(collection._id)} color="failure">
                     Delete
                   </Button>
                 </td>
@@ -157,6 +196,20 @@ const WasteCollectionList = () => {
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* Buttons to generate reports */}
+      <div className="mt-6 flex space-x-4">
+        <Button onClick={handlePDFReport} color="success">
+          Generate PDF Report
+        </Button>
+        <Button onClick={handleExcelReport} color="success">
+          Generate Excel Report
+        </Button>
+        {/* <Button onClick={handleCSVReport} color="success">
+          Generate CSV Report
+        </Button> */}
+
       </div>
     </div>
   );
