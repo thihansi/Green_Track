@@ -36,7 +36,7 @@ const PaymentDetails = ({ isAdmin }) => {
 
     return (
         <div className="p-4">
-            <h2 className="text-xl font-semibold text-center">{isAdmin ? 'Payment Details for All Residents' : 'Your Payment Details'}</h2>
+           <h2 className="text-xl font-semibold text-center mt-6">{isAdmin ? 'Payment Details for All Residents' : 'Your Payment Details'}</h2>
             {payments.length > 0 ? (
                 <Table className="min-w-full bg-white border border-gray-300 shadow-lg rounded-lg mt-4">
                     <Table.Head>
