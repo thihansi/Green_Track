@@ -72,29 +72,41 @@ export const generateExcelReport = (headers, rows, fileName) => {
   
   
 
-  export const generatePDFReport = (headers, rows, fileName) => {
+export const generatePDFReport = (headers, rows, fileName, headingText) => {
     const doc = new jsPDF('landscape'); // Set landscape orientation
-  
-    // Adding a title
+    
+    // Adding the dynamic heading
     doc.setFontSize(18);
-    doc.text('Waste Collection Report', 14, 22);
-  
+    doc.setTextColor(0, 0, 0); // Black text
+    doc.text(headingText, 14, 22); // Use the headingText parameter here
+    
     // Adding date of report generation
     const currentDate = new Date().toLocaleDateString();
     doc.setFontSize(12);
     doc.text(`Generated on: ${currentDate}`, 14, 32);
-  
-    // Define table headers and style
+    
+    // Define table headers and style to match the example
     doc.autoTable({
       startY: 40,
       head: [headers],
       body: rows,
       theme: 'grid',
-      styles: { fillColor: [255, 255, 255], textColor: [0, 0, 0], lineColor: [0, 0, 0] }, // Default white background
-      headStyles: { fillColor: [34, 139, 34], textColor: [255, 255, 255] }, // Greenish header color
-      alternateRowStyles: { fillColor: [224, 255, 224] }, // Light green alternate rows
+      styles: {
+        fillColor: [255, 255, 255], // Default white background
+        textColor: [0, 0, 0], // Black text
+        lineColor: [0, 0, 0], // Black grid lines
+      },
+      headStyles: {
+        fillColor: [34, 139, 34], // Green header color matching the table
+        textColor: [255, 255, 255], // White text for the header
+        halign: 'center', // Horizontal alignment of text
+        fontSize: 12, // Font size for header
+      },
+      alternateRowStyles: {
+        fillColor: [224, 255, 224], // Light green alternate row color
+      },
     });
-  
+    
     // Save the PDF with a date in the filename
     const date = new Date().toISOString().split('T')[0]; // Format as YYYY-MM-DD
     doc.save(`${fileName}-${date}.pdf`);

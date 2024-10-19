@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Button, Alert } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
-import { generateCSVReport, generateExcelReport, generatePDFReport } from "../../utils";
+import { generateExcelReport, generatePDFReport } from "../../utils";
 
 const WasteCollectionList = () => {
   const { currentUser } = useSelector((state) => state.user);
@@ -146,7 +146,7 @@ const WasteCollectionList = () => {
       row.nonRecyclables,
     ]);
 
-    generatePDFReport(headers, rows, 'WasteCollectionReport');
+    generatePDFReport(headers, rows, 'WasteCollectionReport', 'Waste Collection and Recycling Overview');
   };
 
 
