@@ -1,5 +1,5 @@
 import express from 'express';
-import { createBilling, getBillings, getBillingById, updateBilling, deleteBilling} from '../../controllers/IT22003546_Controllers/billing.controller.js';
+import { createBilling, getBillings, getBillingById, updateBilling, deleteBilling} from '../../controllers/IT22003546/billing.controller.js';
 import { verifyToken } from '../../utils/verifyToken.js';
 
 const router = express.Router();

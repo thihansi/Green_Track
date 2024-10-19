@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest'; // Use Vitest
 import mongoose from 'mongoose';
-import Pricing from '../../models/IT22003546_models/pricing.model.js';
+import Pricing from '../../models/IT22003546/pricing.model.js';
 
 describe('Pricing Model', () => {
     beforeEach(async () => {

@@ -1,4 +1,4 @@
-import Pricing from '../../models/IT22003546_models/pricing.model.js';
+import Pricing from '../../models/IT22003546/pricing.model.js';
 
 // Create a new collection pricing
 export const createPricing = async (req, res) => {
