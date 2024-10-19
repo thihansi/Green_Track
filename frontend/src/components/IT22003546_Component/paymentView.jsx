@@ -51,7 +51,7 @@ const PaymentDetails = ({ isAdmin }) => {
                             <Table.Row key={index} className="hover:bg-gray-100 transition duration-200">
                                 <Table.Cell>{payment.paymentID}</Table.Cell>
                                 {isAdmin && <Table.Cell>{payment.customerID}</Table.Cell>} {/* Show Resident ID only for Admins */}
-                                <Table.Cell>${payment.amount.toFixed(2)}</Table.Cell>
+                                <Table.Cell>LKR {payment.amount.toFixed(2)}</Table.Cell>
                                 <Table.Cell>{new Date(payment.paymentDate).toLocaleDateString('en-CA')}</Table.Cell>
                                 <Table.Cell>{payment.paymentMethod}</Table.Cell>
                             </Table.Row>
