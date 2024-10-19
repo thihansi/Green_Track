@@ -128,7 +128,8 @@ const deleteInventoryCore = async (req, res, next) => {
   try {
     // Attempt to find and delete the inventory item by ID
     await Inventory.findByIdAndDelete(req.params.postId);
-    res.status(200).json("The resource has been deleted successfully");
+    // Send a JSON response with a message object
+    res.status(200).json({ message: "The resource has been deleted successfully" });
   } catch (error) {
     next(error);
   }
