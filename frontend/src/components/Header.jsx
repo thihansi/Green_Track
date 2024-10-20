@@ -97,6 +97,9 @@ const Header = () => {
           <Link to="/wastecollection/form">Waste Collection</Link>
         </Navbar.Link>
       )}
+       <Navbar.Link active={path === "/wastecollection"} as={"div"}>
+          <Link to="/user/wasteCollection">Waste Collection</Link>
+        </Navbar.Link>
         {/* Conditionally render the Waste Collection link if the user is NOT a WasteCollectionManager */}
       {currentUser && !currentUser.WasteCollectionManager && (
         <Navbar.Link active={path === "/wastecollection"} as={"div"}>
