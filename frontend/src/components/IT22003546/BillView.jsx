@@ -4,6 +4,8 @@ import { Table, Button } from 'flowbite-react'; // Import Flowbite components
 import PaymentDetails from './paymentView'; // Import the PaymentDetails component
 import { generatePayId } from "../../utils";
 import { generateBillId } from "../../utils";
+import { generateExcelReport, generatePDFReport } from "../../utils";
+
 
 const CalculateTotalPrice = () => {
     const [wasteData, setWasteData] = useState([]);
@@ -261,6 +263,54 @@ const CalculateTotalPrice = () => {
         }
     };
 
+    const prepareReportData = () => {
+            if (currentUser.isAdmin) {
+                return groupedAdminTotalCostsArray.map((cost) => ({
+                    residentId: cost.residentId,
+                    garbageDetails: Object.entries(cost.garbageDetails)
+                        .map(([category, details]) => `${category}: ${details.weight} kg`)
+                        .join(', '),
+                    recyclingDetails: Object.entries(cost.recyclingDetails)
+                        .map(([category, details]) => `${category}: ${details.weight} kg`)
+                        .join(', '),
+                    totalGarbageCost: `LKR ${cost.totalGarbageCost.toFixed(2)}`,
+                    totalRecyclingReward: `LKR ${cost.totalRecyclingReward.toFixed(2)}`,
+                    totalPrice: `LKR ${cost.totalPrice.toFixed(2)}`,
+                }));
+            } else {
+                return userTotalCosts.map((cost) => ({
+                    garbageDetails: cost.garbageDetails
+                        .map((item) => `${item.category}: ${item.weight} kg`)
+                        .join(', '),
+                    recyclingDetails: cost.recyclingDetails
+                        .map((item) => `${item.category}: ${item.weight} kg`)
+                        .join(', '),
+                    totalGarbageCost: `LKR ${cost.totalGarbageCost.toFixed(2)}`,
+                    totalRecyclingReward: `LKR ${cost.totalRecyclingReward.toFixed(2)}`,
+                    totalPrice: `LKR ${cost.totalPrice.toFixed(2)}`,
+                    collectionDate: cost.collectionDate,
+                }));
+            }
+        };
+    
+    const handleExcelReport = () => {
+        const headers = currentUser.isAdmin
+            ? ["Resident ID", "Garbage Details", "Garbage Cost", "Recycling Details", "Recycling Reward", "Total Price"]
+            : ["Garbage Details", "Garbage Cost", "Recycling Details", "Recycling Reward", "Total Price", "Collection Date"];
+        const rows = prepareReportData().map(row => Object.values(row));
+    
+        generateExcelReport(headers, rows, 'PriceCalculationReport');
+    };
+    
+    const handlePDFReport = () => {
+        const headers = currentUser.isAdmin
+            ? ["Resident ID", "Garbage Details", "Garbage Cost", "Recycling Details", "Recycling Reward", "Total Price"]
+            : ["Garbage Details", "Garbage Cost", "Recycling Details", "Recycling Reward", "Total Price", "Collection Date"];
+        const rows = prepareReportData().map(row => Object.values(row));
+      
+        generatePDFReport(headers, rows, 'PriceCalculationReport', 'Waste Management Cost Summary');
+    };
+
     return (
         <div className="p-4 flex flex-col items-center dark:bg-gray-900 dark:text-gray-100 min-h-screen">
             {currentUser.isAdmin ? (
@@ -326,7 +376,7 @@ const CalculateTotalPrice = () => {
                             </Table.Head>
                             <Table.Body>
                                 {userTotalCosts.map((cost, index) => (
-                                    <Table.Row key={index} className={`hover:bg-gray-200 transition duration-200`}>
+                                    <Table.Row key={index} className={`hover:bg-gray-200 transition duration-200 ${finalAmountToPay <= 0 ? 'bg-green-100' : 'bg-red-100'}`}>
                                         <Table.Cell>
                                             {cost.garbageDetails.map((item, idx) => (
                                                 <div key={idx}>
@@ -352,6 +402,8 @@ const CalculateTotalPrice = () => {
                     ) : (
                         <p>No data available to calculate total prices.</p>
                     )}
+                    
+                    
                     <div className="mt-4 p-4 bg-white text-gray-800 rounded w-full max-w-md flex flex-col items-center shadow-lg">
                         <h2 className="text-lg font-semibold">Total Amount to be Paid</h2>
                         <p className="text-3xl font-bold">LKR{finalAmountToPay.toFixed(2)}</p>
@@ -361,8 +413,13 @@ const CalculateTotalPrice = () => {
                             Pay Now
                         </Button>
                     </div>
+                    
                 </>
             )}
+            <div className="mt-6 p-4 flex space-x-4 ">
+                <Button onClick={handlePDFReport} color="success">Generate PDF Report</Button>
+                <Button onClick={handleExcelReport} color="success">Generate Excel Report</Button>
+            </div>
 
             <PaymentDetails userPayments={userPayments} isAdmin={currentUser.isAdmin} />
         </div>

@@ -1,6 +1,6 @@
 import { Sidebar } from "flowbite-react";
 import { useEffect, useState } from "react";
-import { HiArrowSmRight, HiTrash, HiTruck, HiUser } from "react-icons/hi";
+import { HiArrowSmRight, HiTrash, HiTruck, HiUser, HiOutlineCash, HiOutlineDocumentReport, HiOutlineTrash } from "react-icons/hi";
 import { useDispatch } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import { signOutSuccess } from "../redux/user/userSlice";
@@ -57,7 +57,7 @@ export default function DashSidebar() {
               <Link to="/dashboard?tab=pricing-list">
                 <Sidebar.Item
                   active={tab === "pricing-list"}
-                  icon={HiUser}
+                  icon={HiOutlineCash}
                   labelColor="dark"
                   as="div"
                 >
@@ -70,7 +70,7 @@ export default function DashSidebar() {
           <Link to="/dashboard?tab=bill-view">
             <Sidebar.Item
               active={tab === "bill-view"}
-              icon={HiUser}
+              icon={HiOutlineDocumentReport}
               labelColor="dark"
               as="div"
             >
@@ -92,27 +92,31 @@ export default function DashSidebar() {
             </>
           )}
 
+          {currentUser.WasteCollectionManager && (
+            <>
               <Link to="/dashboard?tab=waste-collection">
                 <Sidebar.Item
                   active={tab === "waste-collection"}
-                  icon={HiUser}
+                  icon={HiOutlineTrash}
                   labelColor="dark"
                   as="div"
                 >
                   Waste Collection
                 </Sidebar.Item>
               </Link>
+            </>
+          )}
 
-{currentUser.WasteAuthorityAdmin && (
-          <Link to="/all-requests">
-            <Sidebar.Item
-              active={tab === "View waste-schedules"}
-              icon={HiTruck}
-              as="div"
-            >
-              Schedule Waste
-            </Sidebar.Item>
-          </Link>
+          {currentUser.WasteAuthorityAdmin && (
+            <Link to="/all-requests">
+              <Sidebar.Item
+                active={tab === "View waste-schedules"}
+                icon={HiTruck}
+                as="div"
+              >
+                Schedule Waste
+              </Sidebar.Item>
+            </Link>
           )}
           <Sidebar.Item
             icon={HiArrowSmRight}
