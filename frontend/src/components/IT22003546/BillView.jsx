@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from "react-redux";
 import { Table, Button } from 'flowbite-react'; // Import Flowbite components
 import PaymentDetails from './paymentView'; // Import the PaymentDetails component
+import { generatePayId } from "../../utils";
+import { generateBillId } from "../../utils";
 
 const CalculateTotalPrice = () => {
     const [wasteData, setWasteData] = useState([]);
@@ -199,7 +201,7 @@ const CalculateTotalPrice = () => {
 
         // Prepare payment data
         const paymentData = {
-            paymentID: `PAY-${Date.now()}`, // Generate a unique payment ID
+            paymentID: generatePayId(), // Generate a unique payment ID
             customerID: currentUser.username,     // Use the logged-in user's ID
             paymentDate: new Date(),          // Current date
             amount: finalAmountToPay,         // Amount to be paid after adjustment
@@ -223,7 +225,7 @@ const CalculateTotalPrice = () => {
 
                 // Prepare billing information
                 const billingData = {
-                    billingId: `BILL-${Date.now()}`, // Generate a unique billing ID
+                    billingId: generateBillId(), // Generate a unique billing ID
                     residentId: currentUser.username,  // Use the logged-in user's ID
                     garbageCost: userTotalCosts.reduce((sum, cost) => sum + cost.totalGarbageCost, 0), // Total garbage cost for the user
                     recyclingReward: userTotalCosts.reduce((sum, cost) => sum + cost.totalRecyclingReward, 0), // Total recycling reward for the user
@@ -280,7 +282,7 @@ const CalculateTotalPrice = () => {
                                     const totalPaid = paymentsByResident[cost.residentId] || 0; // Get total paid by the resident
                                     const outstandingAmount = cost.totalPrice - totalPaid; // Calculate outstanding amount
                                     return (
-                                        <Table.Row key={index} className={`hover:bg-gray-200 transition duration-200`}>
+                                        <Table.Row key={index} className={`hover:bg-gray-200 transition duration-200 ${outstandingAmount <= 0 ? 'bg-green-100' : 'bg-red-100'}`}>
                                             <Table.Cell>{cost.residentId}</Table.Cell>
                                             <Table.Cell>
                                                 {Object.entries(cost.garbageDetails).map(([category, details], idx) => (
