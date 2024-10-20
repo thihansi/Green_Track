@@ -7,6 +7,17 @@ export const generateCollectionId = () => {
   return `COL-${nanoid(8)}`; // Generate an 8-character unique ID
 };
 
+// Function to generate an 8-digit numeric Payment ID
+export const generatePayId = () => {
+  return `PID-${Math.floor(10000000 + Math.random() * 90000000).toString()}`; // Generates an 8-digit number
+};
+
+// Function to generate an 8-digit numeric Bill ID
+export const generateBillId = () => {
+  return `BILL-${Math.floor(10000000 + Math.random() * 90000000).toString()}`; // Generates an 8-digit number
+};
+
+
 export const generateCSVReport = (headers, rows, fileName) => {
     const csvRows = [];
   
