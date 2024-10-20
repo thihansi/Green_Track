@@ -11,27 +11,26 @@ import Inventory from "../../models/IT22577160/inventory.model.js";
 // Mock the Inventory model
 vi.mock("../../models/IT22577160/inventory.model.js");
 
-
+//---------------------CREATE TEST CASE---------------------//
 //Test case for Inventory creation
 describe("InventoryController Unit Tests", () => {
   describe("Create Equipment to Inventory bulk ", () => {
     let req, res, next;
     beforeEach(() => {
       vi.clearAllMocks();
-      
     });
-  
+
     // 1. Test successful inventory creation
     it("should add Equipment to Inventory bulk", async () => {
       try {
         //Mocking the save function of Inventory
         Inventory.mockImplementation(() => ({
           save: vi.fn().mockResolvedValue({
-
             userId: "12345",
             itemName: "Shredder",
             category: "WasteBin",
-            image: "https://image.made-in-china.com/2f0j00RoUzLfprRcql/120L-Wheelie-Garbage-Bin-Rubbish-Container-Waste-Pedal-Trash-Can-Plastic-Dustbin.webp",
+            image:
+              "https://image.made-in-china.com/2f0j00RoUzLfprRcql/120L-Wheelie-Garbage-Bin-Rubbish-Container-Waste-Pedal-Trash-Can-Plastic-Dustbin.webp",
             quantity: 2,
             condition: 1,
             description: "Made with Plastic",
@@ -40,7 +39,7 @@ describe("InventoryController Unit Tests", () => {
             offer: true,
             regularPrice: 1000,
             discountPrice: 50,
-            slug: "shredder-wastebin-12345"
+            slug: "shredder-wastebin-12345",
           }),
         }));
 
@@ -54,6 +53,7 @@ describe("InventoryController Unit Tests", () => {
     });
 
     // Test case 2: Create Inventory - Authorization Test
+    // negative test case
     it("should not allow creating inventory if the user is not an EquipmentInventoryManager", async () => {
       const req = { user: { EquipmentInventoryManger: false }, body: {} };
       const res = {};
@@ -61,12 +61,14 @@ describe("InventoryController Unit Tests", () => {
 
       await createInventory(req, res, next);
 
+      //Assertions
       expect(next).toHaveBeenCalledWith(
         errorHandler(403, "You are not authorized to create a listing")
       );
     });
 
     // Test case 3: Create Inventory - Validation Test
+    // negative test case
     it("should not create inventory if required fields are missing", async () => {
       const req = {
         user: { EquipmentInventoryManger: true },
@@ -77,6 +79,7 @@ describe("InventoryController Unit Tests", () => {
 
       await createInventory(req, res, next);
 
+      //Assertions
       expect(next).toHaveBeenCalledWith(
         errorHandler(400, "Please Provide all the required fields")
       );
@@ -84,7 +87,7 @@ describe("InventoryController Unit Tests", () => {
   });
 });
 
-
+//---------------------GET ALL TEST CASE---------------------//
 //Get Equipment from Inventory bulk
 describe("Get Equipment from Inventory bulk ", () => {
   // Test case 4: Get Inventory Items - Query Parsing Test
@@ -105,6 +108,7 @@ describe("Get Equipment from Inventory bulk ", () => {
 
     await getInventoryItems(req, res, next);
 
+    //Assertions
     expect(req.pagination).toEqual({
       startIndex: 5,
       limit: 10,
@@ -114,9 +118,9 @@ describe("Get Equipment from Inventory bulk ", () => {
   });
 });
 
-
+//----------------------UPDATE TEST CASE---------------------//
 //Update Equipment from Inventory bulk
-describe('updateInventoryItems', () => {
+describe("updateInventoryItems", () => {
   let req, res, next;
 
   beforeEach(() => {
@@ -125,20 +129,20 @@ describe('updateInventoryItems', () => {
 
     req = {
       params: {
-        postId: '12345',
+        postId: "12345",
       },
       body: {
-        itemName: 'Updated Item',
-        description: 'Updated Description',
-        location: 'Updated Location',
-        category: 'Updated Category',
+        itemName: "Updated Item",
+        description: "Updated Description",
+        location: "Updated Location",
+        category: "Updated Category",
         quantity: 10,
-        type: 'Updated Type',
-        image: 'updated-image.jpg',
-        condition: 'Updated Condition',
+        type: "Updated Type",
+        image: "updated-image.jpg",
+        condition: "Updated Condition",
         regularPrice: 100,
         discountPrice: 80,
-        offer: '20% Off',
+        offer: "20% Off",
       },
       user: {
         EquipmentInventoryManger: true, // Mocking the required user property
@@ -153,12 +157,11 @@ describe('updateInventoryItems', () => {
     next = vi.fn();
   });
 
-
   // Test case 5: Update Inventory Items - Success Test
-  it('should update an inventory item successfully and return the updated item', async () => {
+  it("should update an inventory item successfully and return the updated item", async () => {
     // Arrange: Mock the findByIdAndUpdate function to return the updated resource
     const mockUpdatedResource = {
-      _id: '12345',
+      _id: "12345",
       ...req.body,
     };
     Inventory.findByIdAndUpdate.mockResolvedValue(mockUpdatedResource);
@@ -186,14 +189,15 @@ describe('updateInventoryItems', () => {
       },
       { new: true }
     );
+    // Assertions
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith(mockUpdatedResource);
     expect(next).not.toHaveBeenCalled();
   });
 
-
-   //Test case 6: Update Inventory Items - Authorization Test
-   it("should not allow updating inventory if the user is not authorized", async () => {
+  //Test case 6: Update Inventory Items - Authorization Test
+  // negative test case
+  it("should not allow updating inventory if the user is not authorized", async () => {
     const req = {
       user: { id: "user1" },
       params: { userId: "user2" },
@@ -210,9 +214,7 @@ describe('updateInventoryItems', () => {
   });
 });
 
- 
-
-
+//---------------------DELETE TEST CASE---------------------//
 // Test case 7: Delete Inventory Items - Authorization Test
 describe("Delete Inventory Items", () => {
   beforeEach(() => {
@@ -244,7 +246,7 @@ describe("Delete Inventory Items", () => {
     });
   });
 
-  // Test case 9: Delete Inventory Items - Error Test
+  // Test case 9: Delete Inventory Items - negative Test
   it("should call next with error when an error occurs", async () => {
     const req = {
       user: {
@@ -261,10 +263,10 @@ describe("Delete Inventory Items", () => {
     Inventory.findByIdAndDelete.mockRejectedValueOnce(
       new Error("Database error")
     );
-    
 
     await deleteInventoryItems(req, res, next);
 
+    //Assertions
     expect(next).toHaveBeenCalledWith(expect.any(Error));
   });
 });
