@@ -45,7 +45,7 @@ export default function HomePage() {
             className="w-[250px] rounded-tl-2xl rounded-br-2xl"
             gradientDuoTone="tealToLime"
           >
-            <Link className="transition duration-100 ease-in-out">
+            <Link to="/user/wasteCollection" className="transition duration-100 ease-in-out">
               Get Started
             </Link>
           </Button>
