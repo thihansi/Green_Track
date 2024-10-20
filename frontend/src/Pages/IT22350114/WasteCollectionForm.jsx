@@ -260,17 +260,18 @@ const WasteCollectionForm = () => {
 
               {/* Weight */}
               <div>
-                <Label htmlFor={`weight-${index}`}>Weight (kg)</Label>
-                <TextInput
-                  id={`weight-${index}`}
-                  type="number"
-                  name="weight"
-                  value={garbageItem.weight}
-                  onChange={(e) => handleGarbageChange(index, e)}
-                  min="0"
-                  required
-                />
-              </div>
+  <Label htmlFor={`weight-${index}`}>Weight (kg)</Label>
+  <TextInput
+    id={`weight-${index}`}
+    type="number"
+    name="weight"
+    value={garbageItem.weight}
+    onChange={(e) => handleGarbageChange(index, e)}
+    min="0"
+    step="0.01"  // Allow up to two decimal places
+    required
+  />
+</div>
             </div>
           ))}
 
